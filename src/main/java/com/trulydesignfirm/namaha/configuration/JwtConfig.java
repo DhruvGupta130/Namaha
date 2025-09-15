@@ -26,11 +26,11 @@ import java.util.Base64;
 @Getter
 @Setter
 @Configuration
-@ConfigurationProperties(prefix = "spring.jwt")
+@ConfigurationProperties(prefix = "jwt")
 public class JwtConfig {
 
-    private String publicKeyRes;
-    private String privateKeyRes;
+    private String publicKey;
+    private String privateKey;
 
     @Bean
     public JwtEncoder jwtEncoder() throws Exception {
@@ -47,14 +47,14 @@ public class JwtConfig {
     }
 
     private RSAPublicKey loadPublicKey() throws Exception {
-        String key = readKey(publicKeyRes, "PUBLIC");
+        String key = readKey(publicKey, "PUBLIC");
         byte[] decoded = Base64.getDecoder().decode(key);
         return (RSAPublicKey) KeyFactory.getInstance("RSA")
                 .generatePublic(new X509EncodedKeySpec(decoded));
     }
 
     private RSAPrivateKey loadPrivateKey() throws Exception {
-        String key = readKey(privateKeyRes, "PRIVATE");
+        String key = readKey(privateKey, "PRIVATE");
         byte[] decoded = Base64.getDecoder().decode(key);
         return (RSAPrivateKey) KeyFactory.getInstance("RSA")
                 .generatePrivate(new PKCS8EncodedKeySpec(decoded));
