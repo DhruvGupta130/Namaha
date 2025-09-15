@@ -3,10 +3,12 @@ package com.trulydesignfirm.namaha.configuration;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.Resource;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -21,14 +23,14 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
+@Getter
+@Setter
 @Configuration
+@ConfigurationProperties(prefix = "spring.jwt")
 public class JwtConfig {
 
-    @Value("${jwt.public-key}")
-    private Resource publicKeyRes;
-
-    @Value("${jwt.private-key}")
-    private Resource privateKeyRes;
+    private String publicKeyRes;
+    private String privateKeyRes;
 
     @Bean
     public JwtEncoder jwtEncoder() throws Exception {
@@ -45,22 +47,34 @@ public class JwtConfig {
     }
 
     private RSAPublicKey loadPublicKey() throws Exception {
-        String key = StreamUtils.copyToString(publicKeyRes.getInputStream(), StandardCharsets.UTF_8)
-                .replace("-----BEGIN PUBLIC KEY-----", "")
-                .replace("-----END PUBLIC KEY-----", "")
-                .replaceAll("\\s", "");
+        String key = readKey(publicKeyRes, "PUBLIC");
         byte[] decoded = Base64.getDecoder().decode(key);
         return (RSAPublicKey) KeyFactory.getInstance("RSA")
                 .generatePublic(new X509EncodedKeySpec(decoded));
     }
 
     private RSAPrivateKey loadPrivateKey() throws Exception {
-        String key = StreamUtils.copyToString(privateKeyRes.getInputStream(), StandardCharsets.UTF_8)
-                .replace("-----BEGIN PRIVATE KEY-----", "")
-                .replace("-----END PRIVATE KEY-----", "")
-                .replaceAll("\\s", "");
+        String key = readKey(privateKeyRes, "PRIVATE");
         byte[] decoded = Base64.getDecoder().decode(key);
         return (RSAPrivateKey) KeyFactory.getInstance("RSA")
                 .generatePrivate(new PKCS8EncodedKeySpec(decoded));
+    }
+
+    private String readKey(String keyInput, String type) throws Exception {
+        String keyContent = keyInput.startsWith("-----BEGIN")
+                ? keyInput
+                : StreamUtils.copyToString(
+                new DefaultResourceLoader().getResource(keyInput).getInputStream(),
+                StandardCharsets.UTF_8
+        );
+        return stripPemHeaders(keyContent, type);
+    }
+
+    private String stripPemHeaders(String pem, String type) {
+        return pem
+                .replaceAll("-----BEGIN " + type + " KEY-----", "")
+                .replaceAll("-----END " + type + " KEY-----", "")
+                .replaceAll("\\s", "")
+                .trim();
     }
 }
