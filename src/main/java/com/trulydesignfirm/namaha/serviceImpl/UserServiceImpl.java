@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
         address.setCity(addressDto.city());
         address.setState(addressDto.state());
         address.setCountry(addressDto.country());
-        address.setPincode(addressDto.pincode());
+        address.setPinCode(addressDto.pinCode());
         address.setLatitude(addressDto.latitude());
         address.setLongitude(addressDto.longitude());
         addressRepository.save(address);

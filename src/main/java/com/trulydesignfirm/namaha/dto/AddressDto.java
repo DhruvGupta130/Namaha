@@ -18,9 +18,9 @@ public record AddressDto(
         @NotBlank(message = "Country is required")
         String country,
 
-        @NotBlank(message = "Pincode is required")
-        @Pattern(regexp = "\\d{6}", message = "Pincode must be exactly 6 digits")
-        String pincode,
+        @NotBlank(message = "PinCode is required")
+        @Pattern(regexp = "\\d{6}", message = "PinCode must be exactly 6 digits")
+        String pinCode,
 
         @NotNull(message = "Latitude is required")
         Double latitude,
@@ -29,6 +29,6 @@ public record AddressDto(
         Double longitude
 ) {
     public AddressDto(Address address) {
-        this(address.getStreet(), address.getCity(), address.getState(), address.getCountry(), address.getPincode(), address.getLatitude(), address.getLongitude());
+        this(address.getStreet(), address.getCity(), address.getState(), address.getCountry(), address.getPinCode(), address.getLatitude(), address.getLongitude());
     }
 }

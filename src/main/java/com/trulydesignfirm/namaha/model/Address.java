@@ -32,7 +32,7 @@ public class Address {
     private String country;
 
     @Column(nullable = false)
-    private String pincode;
+    private String pinCode;
 
     @Column(nullable = false)
     private Double latitude;

@@ -21,14 +21,14 @@ public class AuthController {
     @PostMapping("/signup")
     @Operation(summary = "Signup a new user")
     public ResponseEntity<Response> signup(@RequestBody @Valid SignupRequest request) {
-        return ResponseEntity.ok(authService.signup(request));
+        Response response = authService.signup(request);
+        return new ResponseEntity<>(response, response.status());
     }
 
     @PostMapping("/login")
     @Operation(summary = "Login an existing user")
     public ResponseEntity<Response> login(@RequestBody @Valid LoginRequest request) {
-        System.out.println(request);
-        System.out.println(request.mobile());
-        return ResponseEntity.ok(authService.login(request));
+        Response response = authService.login(request);
+        return new ResponseEntity<>(response, response.status());
     }
 }

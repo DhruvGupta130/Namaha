@@ -35,14 +35,16 @@ public class UserController {
             @RequestParam String currentPassword,
             @RequestParam String newPassword
     ) {
-        return ResponseEntity.ok(userService.resetPassword(principal.getName(), currentPassword, newPassword));
+        Response response = userService.resetPassword(principal.getName(), currentPassword, newPassword);
+        return new ResponseEntity<>(response, response.status());
     }
 
 
     @PutMapping("/update")
     @Operation(summary = "Update user details")
     public ResponseEntity<Response> update(Principal principal, @RequestBody @Valid UpdateUser request) {
-        return ResponseEntity.ok(userService.updateUser(principal.getName(), request));
+        Response response = userService.updateUser(principal.getName(), request);
+        return new ResponseEntity<>(response, response.status());
     }
 
     @GetMapping("/address")
@@ -54,6 +56,7 @@ public class UserController {
     @PutMapping("/address")
     @Operation(summary = "Update user address")
     public ResponseEntity<Response> updateAddress(Principal principal, @RequestBody @Valid AddressDto addressDto) {
-        return ResponseEntity.ok(userService.updateAddress(principal.getName(), addressDto));
+        Response response = userService.updateAddress(principal.getName(), addressDto);
+        return new ResponseEntity<>(response, response.status());
     }
 }
