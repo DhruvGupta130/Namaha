@@ -14,7 +14,6 @@ import java.util.List;
 @Setter
 @Entity
 @Table(indexes = {
-        @Index(name = "idx_product_category", columnList = "category"),
         @Index(name = "idx_product_variety", columnList = "variety")
 })
 public class Product {

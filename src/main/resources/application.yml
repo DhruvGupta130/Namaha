@@ -29,7 +29,7 @@ spring:
       allowed-origins:
         - http://localhost:3000
         - http://localhost:8080
-        - https://namaha-y9tf.onrender.com
+        - https://namaha-t9p6.onrender.com
   storage:
     cloudinary:
       cloud-name: ${CLOUDINARY_CLOUD_NAME}
