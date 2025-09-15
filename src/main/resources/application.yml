@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: namaha
+  datasource:
+    url: ${DATASOURCE_URL:jdbc:mysql://localhost:4000/namaha}
+    username: ${DATASOURCE_USERNAME:4TNQfiUzBuM1UEZ.root}
+    password: ${DATASOURCE_PASSWORD:SD3Dg8K2FIOjiKuQ}
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 10
+      idle-timeout: 10000
+      max-lifetime: 1800000
+      keepalive-time: 600000
+      connection-timeout: 20000
+      validation-timeout: 5000
+      leak-detection-threshold: 10000
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+  data:
+    jdbc:
+      dialect: mysql
+  jackson:
+    default-property-inclusion: NON_EMPTY
+  app:
+    cors:
+      allowed-origins:
+        - http://localhost:3000
+        - http://localhost:8080
+        - https://namaha-y9tf.onrender.com
+  storage:
+    cloudinary:
+      cloud-name: ${CLOUDINARY_CLOUD_NAME:davzcixta}
+      api-key: ${CLOUDINARY_API_KEY:436636266116166}
+      api-secret: ${CLOUDINARY_API_SECRET:123456789}
+jwt:
+  public-key: ${PUBLIC_KEY:classpath:public.pem}
+  private-key: ${PRIVATE_KEY:classpath:private.pem}
+  access-token:
+    expiry: 30D
+  token:
+    issuer: https://namaha.com
