@@ -2,9 +2,9 @@ spring:
   application:
     name: namaha
   datasource:
-    url: ${DATASOURCE_URL:jdbc:mysql://localhost:4000/namaha}
-    username: ${DATASOURCE_USERNAME:4TNQfiUzBuM1UEZ.root}
-    password: ${DATASOURCE_PASSWORD:SD3Dg8K2FIOjiKuQ}
+    url: ${DATASOURCE_URL:jdbc:mysql://localhost:3306/namaha}
+    username: ${DATASOURCE_USERNAME:root}
+    password: ${DATASOURCE_PASSWORD:root}
     hikari:
       minimum-idle: 5
       maximum-pool-size: 10
@@ -32,9 +32,9 @@ spring:
         - https://namaha-y9tf.onrender.com
   storage:
     cloudinary:
-      cloud-name: ${CLOUDINARY_CLOUD_NAME:davzcixta}
-      api-key: ${CLOUDINARY_API_KEY:436636266116166}
-      api-secret: ${CLOUDINARY_API_SECRET:123456789}
+      cloud-name: ${CLOUDINARY_CLOUD_NAME}
+      api-key: ${CLOUDINARY_API_KEY}
+      api-secret: ${CLOUDINARY_API_SECRET}
 jwt:
   public-key: ${PUBLIC_KEY:classpath:public.pem}
   private-key: ${PRIVATE_KEY:classpath:private.pem}
