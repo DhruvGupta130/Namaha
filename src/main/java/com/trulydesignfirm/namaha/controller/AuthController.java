@@ -18,10 +18,20 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final AuthService authService;
 
+    @PostMapping("/get-otp")
+    @Operation(summary = "Get OTP for signup")
+    public ResponseEntity<Response> getOtp(@RequestBody @Valid SignupRequest request) {
+        Response response = authService.getOtp(request);
+        return new ResponseEntity<>(response, response.status());
+    }
+
     @PostMapping("/signup")
     @Operation(summary = "Signup a new user")
-    public ResponseEntity<Response> signup(@RequestBody @Valid SignupRequest request) {
-        Response response = authService.signup(request);
+    public ResponseEntity<Response> signup(
+            @RequestBody @Valid SignupRequest request,
+            @RequestParam String otp
+    ) {
+        Response response = authService.signup(request, otp);
         return new ResponseEntity<>(response, response.status());
     }
 

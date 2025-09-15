@@ -1,12 +1,14 @@
 package com.trulydesignfirm.namaha.model;
 
 import com.trulydesignfirm.namaha.constant.FlowerVariety;
-import com.trulydesignfirm.namaha.constant.ProductCategory;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -25,27 +27,41 @@ public class Product {
     private String title;
 
     @Column(nullable = false)
-    private String coverImage;
-
-    @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal price;
+    @ElementCollection
+    @CollectionTable(
+            name = "product_images",
+            joinColumns = @JoinColumn(name = "product_id")
+    )
+    @Column(name = "image_url", nullable = false)
+    @Size(min = 1, max = 3, message = "Product must have between 1 and 3 images")
+    private List<String> images = new ArrayList<>();
 
-    @Column(nullable = false, precision = 10, scale = 3)
-    private BigDecimal weight;
+    @Column(nullable = false)
+    private Integer weightInGrams;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private FlowerVariety variety;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private ProductCategory category;
+    private Integer durationInDays = 0;
 
-    private Long duration;   // instead of Duration
+    @Column(precision = 10, scale = 2)
+    private BigDecimal subscriptionPrice;
 
     @Column(nullable = false)
-    private Boolean oneTime = false; // instead of isOneTime
+    private Boolean oneTime = false;
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal oneTimePrice;
+
+    public boolean isSubscription() {
+        return durationInDays != null && durationInDays > 0;
+    }
+
+    public boolean isOneTimePurchase() {
+        return oneTime != null && oneTime;
+    }
 }

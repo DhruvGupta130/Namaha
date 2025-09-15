@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface AuthService {
-    Response signup(@Valid SignupRequest request);
+    Response getOtp(@Valid SignupRequest request);
+    Response signup(@Valid SignupRequest request, String otp);
     Response login(@Valid LoginRequest request);
 }

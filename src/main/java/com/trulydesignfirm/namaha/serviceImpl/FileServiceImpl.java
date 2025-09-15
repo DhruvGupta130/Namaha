@@ -24,8 +24,10 @@ public class FileServiceImpl implements FileService {
     @Override
     public ImageFile saveFile(MultipartFile file) {
         try {
-            var uploadResult = cloudinary.uploader().upload(file.getBytes(),
-                    Map.of("resource_type", "auto"));
+            var uploadResult = cloudinary.uploader().upload(
+                    file.getBytes(),
+                    Map.of("resource_type", "auto")
+            );
             ImageFile newFile = new ImageFile();
             newFile.setFileName(file.getOriginalFilename());
             newFile.setFileType(file.getContentType());
@@ -41,7 +43,8 @@ public class FileServiceImpl implements FileService {
     @Override
     public String deleteFile(String fileName) {
         try {
-            ImageFile file = fileRepo.findByFileName(fileName)
+            ImageFile file = fileRepo
+                    .findByFileName(fileName)
                     .orElseThrow(() -> new ResolutionException("File not found."));
             cloudinary.uploader().destroy(file.getPublicId(), ObjectUtils.emptyMap());
             fileRepo.delete(file);
