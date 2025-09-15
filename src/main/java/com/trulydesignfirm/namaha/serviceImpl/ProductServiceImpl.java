@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
@@ -34,6 +36,15 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Response deleteProduct(Long id) {
         return new Response("Product deleted successfully!", HttpStatus.OK, null);
+    }
+
+    @Override
+    public List<ProductDto> getAllProducts() {
+        return productRepo
+                .findAll()
+                .stream()
+                .map(ProductDto::new)
+                .toList();
     }
 
     private void addProductDetails(ProductDto dto, Product product) {

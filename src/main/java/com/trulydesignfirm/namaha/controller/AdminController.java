@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
@@ -17,6 +19,12 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
 
     private final ProductService productService;
+
+    @GetMapping("/product/all")
+    @Operation(summary = "Get all products")
+    public ResponseEntity<List<ProductDto>> getAllProducts() {
+        return ResponseEntity.ok(productService.getAllProducts());
+    }
 
     @PostMapping("/product/create")
     @Operation(summary = "Create a new product")

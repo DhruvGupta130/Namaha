@@ -5,6 +5,8 @@ import com.trulydesignfirm.namaha.dto.Response;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public interface ProductService {
     Response createProduct(@Valid ProductDto dto);
@@ -12,4 +14,6 @@ public interface ProductService {
     Response updateProduct(Long id, @Valid ProductDto dto);
 
     Response deleteProduct(Long id);
+
+    List<ProductDto> getAllProducts();
 }

@@ -1,6 +1,7 @@
 package com.trulydesignfirm.namaha.dto;
 
 import com.trulydesignfirm.namaha.constant.FlowerVariety;
+import com.trulydesignfirm.namaha.model.Product;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
@@ -18,13 +19,6 @@ public record ProductDto(
         @NotBlank(message = "Product description is required")
         String description,
 
-        @NotNull(message = "One-time price is required")
-        @DecimalMin(value = "0.01", message = "One-time price must be greater than 0")
-        BigDecimal oneTimePrice,
-
-        @DecimalMin(value = "0.01", message = "Subscription price must be greater than 0")
-        BigDecimal subscriptionPrice,
-
         @NotNull(message = "Weight is required")
         @Min(value = 1, message = "Weight must be at least 1 gram")
         Integer weightInGrams,
@@ -32,10 +26,31 @@ public record ProductDto(
         @NotNull(message = "Flower variety is required")
         FlowerVariety variety,
 
+        @DecimalMin(value = "0.01", message = "Subscription price must be greater than 0")
+        BigDecimal subscriptionPrice,
+
         @NotNull(message = "Duration in days is required")
         @Min(value = 0, message = "Duration cannot be negative")
         Integer durationInDays,
 
+        @NotNull(message = "One-time price is required")
+        @DecimalMin(value = "0.01", message = "One-time price must be greater than 0")
+        BigDecimal oneTimePrice,
+
         @NotNull(message = "One-time purchase flag is required")
         Boolean oneTime
-) {}
+) {
+    public ProductDto(Product product) {
+        this(
+                product.getTitle(),
+                product.getImages(),
+                product.getDescription(),
+                product.getWeightInGrams(),
+                product.getVariety(),
+                product.getSubscriptionPrice(),
+                product.getDurationInDays(),
+                product.getOneTimePrice(),
+                product.getOneTime()
+        );
+    }
+}
