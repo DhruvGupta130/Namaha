@@ -1,9 +1,0 @@
-services:
-  - type: web
-    name: namaha-backend
-    branch: main
-    dockerfilePath: Dockerfile
-    autoDeploy: true
-    plan: starter
-    healthCheckPath: /actuator/health
-    runtime: docker
