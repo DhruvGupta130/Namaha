@@ -3,7 +3,7 @@ package com.trulydesignfirm.namaha.serviceImpl;
 import com.trulydesignfirm.namaha.dto.AddressDto;
 import com.trulydesignfirm.namaha.dto.Response;
 import com.trulydesignfirm.namaha.dto.UpdateUser;
-import com.trulydesignfirm.namaha.dto.UserInfo;
+import com.trulydesignfirm.namaha.dto.UserDto;
 import com.trulydesignfirm.namaha.exception.AuthException;
 import com.trulydesignfirm.namaha.exception.ResourceNotFoundException;
 import com.trulydesignfirm.namaha.exception.UserException;
@@ -31,9 +31,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response getUserInfo(String mobile) {
-        UserInfo userInfo = loginUserRepo
+        UserDto userInfo = loginUserRepo
                 .findByMobile(mobile)
-                .map(UserInfo::new)
+                .map(UserDto::new)
                 .orElseThrow(() -> new AuthException("User Not found!"));
         return new Response("User Info Retrieved Successfully", HttpStatus.OK, userInfo);
     }

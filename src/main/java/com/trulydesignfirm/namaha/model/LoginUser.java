@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -48,6 +49,9 @@ public class LoginUser {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Address address;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Subscription> subscriptions;
 
     public LoginUser(@Mobile String mobile) {
         this.mobile = mobile;

@@ -1,14 +1,15 @@
 package com.trulydesignfirm.namaha.dto;
 
-import com.trulydesignfirm.namaha.constant.FlowerVariety;
-import com.trulydesignfirm.namaha.constant.ProductCategory;
 import com.trulydesignfirm.namaha.model.Product;
+import com.trulydesignfirm.namaha.model.ProductCategory;
+import com.trulydesignfirm.namaha.model.ProductVariety;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 public record ProductDto(
+        Long id,
 
         @NotBlank(message = "Product title is required")
         String title,
@@ -25,7 +26,7 @@ public record ProductDto(
         Integer weightInGrams,
 
         @NotNull(message = "Flower variety is required")
-        FlowerVariety variety,
+        ProductVariety variety,
 
         @NotNull(message = "Product Category is required")
         ProductCategory category,
@@ -46,6 +47,7 @@ public record ProductDto(
 ) {
     public ProductDto(Product product) {
         this(
+                product.getId(),
                 product.getTitle(),
                 product.getImages(),
                 product.getDescription(),

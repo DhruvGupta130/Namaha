@@ -18,6 +18,48 @@ public class AdminController {
 
     private final ProductService productService;
 
+    @GetMapping("/product/variety")
+    @Operation(summary = "Get all product varieties")
+    public ResponseEntity<Response> getAllVarieties() {
+        Response response = productService.getProductVarieties();
+        return new ResponseEntity<>(response, response.status());
+    }
+
+    @PostMapping("/product/variety")
+    @Operation(summary = "Create a new product variety")
+    public ResponseEntity<Response> createVariety(@RequestParam("variety") String varietyName) {
+        Response response = productService.createVariety(varietyName);
+        return new ResponseEntity<>(response, response.status());
+    }
+
+    @DeleteMapping("/product/variety")
+    @Operation(summary = "Delete a product variety")
+    public ResponseEntity<Response> deleteVariety(@RequestParam("variety") String varietyName) {
+        Response response = productService.deleteVariety(varietyName);
+        return new ResponseEntity<>(response, response.status());
+    }
+
+    @GetMapping("/product/category")
+    @Operation(summary = "Get all product categories")
+    public ResponseEntity<Response> getAllCategories() {
+        Response response = productService.getProductCategories();
+        return new ResponseEntity<>(response, response.status());
+    }
+
+    @PostMapping("/product/category")
+    @Operation(summary = "Create a new product category")
+    public ResponseEntity<Response> createCategory(@RequestParam String category) {
+        Response response = productService.createCategory(category);
+        return new ResponseEntity<>(response, response.status());
+    }
+
+    @DeleteMapping("/product/category")
+    @Operation(summary = "Delete a product category")
+    public ResponseEntity<Response> deleteCategory(@RequestParam("category") String categoryName) {
+        Response response = productService.deleteCategory(categoryName);
+        return new ResponseEntity<>(response, response.status());
+    }
+
     @GetMapping("/product/all")
     @Operation(summary = "Get all products")
     public ResponseEntity<Response> getAllProducts(

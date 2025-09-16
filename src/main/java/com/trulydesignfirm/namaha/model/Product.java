@@ -1,7 +1,5 @@
 package com.trulydesignfirm.namaha.model;
 
-import com.trulydesignfirm.namaha.constant.FlowerVariety;
-import com.trulydesignfirm.namaha.constant.ProductCategory;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -41,12 +39,12 @@ public class Product {
     @Column(nullable = false)
     private Integer weightInGrams;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private FlowerVariety variety;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    private ProductVariety variety;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
     private ProductCategory category;
 
     @Column(nullable = false)
@@ -60,6 +58,8 @@ public class Product {
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal oneTimePrice;
+
+    private boolean active = true;
 
     public boolean isSubscription() {
         return durationInDays != null && durationInDays > 0;

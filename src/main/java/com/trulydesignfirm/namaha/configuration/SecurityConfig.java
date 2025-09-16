@@ -12,10 +12,9 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
@@ -43,6 +42,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/health", "/actuator/health", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/api/file/**").permitAll()
                         .requestMatchers("/api/user/**").hasRole("USER")
+                        .requestMatchers("/api/product/**").hasRole("USER")
                         .requestMatchers("/api/delivery/**").hasRole("DELIVERY")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
@@ -78,11 +78,6 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter converter = new JwtGrantedAuthoritiesConverter();
         converter.setAuthoritiesClaimName("authorities");
@@ -95,7 +90,7 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService(LoginUserRepo loginUserRepo) {
         return username -> loginUserRepo.findByMobile(username)
-                .map(user -> org.springframework.security.core.userdetails.User
+                .map(user -> User
                         .withUsername(user.getMobile())
                         .roles(user.getRole().toString())
                         .build())
