@@ -10,6 +10,7 @@ import com.trulydesignfirm.namaha.service.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -44,6 +45,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    @Transactional
     public Response deleteFile(String fileName) {
         try {
             ImageFile file = fileRepo

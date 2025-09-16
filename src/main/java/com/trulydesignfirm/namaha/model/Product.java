@@ -13,7 +13,10 @@ import java.util.List;
 @Setter
 @Entity
 @Table(indexes = {
-        @Index(name = "idx_product_variety", columnList = "variety")
+        @Index(name = "idx_product_variety", columnList = "variety"),
+        @Index(name = "idx_product_category", columnList = "category"),
+        @Index(name = "idx_product_active", columnList = "active"),
+        @Index(name = "idx_category_active", columnList = "category, active")
 })
 public class Product {
 
@@ -40,11 +43,11 @@ public class Product {
     private Integer weightInGrams;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
+    @JoinColumn(name = "variety", nullable = false)
     private ProductVariety variety;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
+    @JoinColumn(name = "category", nullable = false)
     private ProductCategory category;
 
     @Column(nullable = false)
