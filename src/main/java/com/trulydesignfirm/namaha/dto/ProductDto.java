@@ -1,6 +1,7 @@
 package com.trulydesignfirm.namaha.dto;
 
 import com.trulydesignfirm.namaha.constant.FlowerVariety;
+import com.trulydesignfirm.namaha.constant.ProductCategory;
 import com.trulydesignfirm.namaha.model.Product;
 import jakarta.validation.constraints.*;
 
@@ -26,6 +27,9 @@ public record ProductDto(
         @NotNull(message = "Flower variety is required")
         FlowerVariety variety,
 
+        @NotNull(message = "Product Category is required")
+        ProductCategory category,
+
         @DecimalMin(value = "0.01", message = "Subscription price must be greater than 0")
         BigDecimal subscriptionPrice,
 
@@ -47,6 +51,7 @@ public record ProductDto(
                 product.getDescription(),
                 product.getWeightInGrams(),
                 product.getVariety(),
+                product.getCategory(),
                 product.getSubscriptionPrice(),
                 product.getDurationInDays(),
                 product.getOneTimePrice(),

@@ -1,6 +1,7 @@
 package com.trulydesignfirm.namaha.model;
 
 import com.trulydesignfirm.namaha.constant.FlowerVariety;
+import com.trulydesignfirm.namaha.constant.ProductCategory;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -43,6 +44,10 @@ public class Product {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private FlowerVariety variety;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ProductCategory category;
 
     @Column(nullable = false)
     private Integer durationInDays = 0;
