@@ -5,11 +5,13 @@ import com.trulydesignfirm.namaha.dto.Response;
 import com.trulydesignfirm.namaha.dto.UpdateUser;
 import com.trulydesignfirm.namaha.dto.UserInfo;
 import com.trulydesignfirm.namaha.exception.AuthException;
+import com.trulydesignfirm.namaha.exception.ResourceNotFoundException;
 import com.trulydesignfirm.namaha.exception.UserException;
 import com.trulydesignfirm.namaha.model.Address;
 import com.trulydesignfirm.namaha.model.LoginUser;
 import com.trulydesignfirm.namaha.repository.AddressRepo;
 import com.trulydesignfirm.namaha.repository.LoginUserRepo;
+import com.trulydesignfirm.namaha.service.ServiceAreaService;
 import com.trulydesignfirm.namaha.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,12 +19,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final LoginUserRepo loginUserRepo;
     private final AddressRepo addressRepository;
+    private final ServiceAreaService serviceAreaService;
 
     @Override
     public UserInfo getUserInfo(String mobile) {
@@ -65,6 +70,16 @@ public class UserServiceImpl implements UserService {
         address.setLongitude(addressDto.longitude());
         addressRepository.save(address);
         return new Response("Address Updated Successfully", HttpStatus.OK, null);
+    }
+
+    @Override
+    public Response checkServiceArea(String mobile) {
+        Address address = addressRepository
+                .findByUser_Mobile(mobile)
+                .orElseThrow(() -> new ResourceNotFoundException("No Address Found!"));
+        boolean isDeliverable = serviceAreaService.isDeliverable(address.getLatitude(), address.getLongitude());
+        String message = isDeliverable ? "Area is serviceable" : "Area is not serviceable";
+        return new Response(message, HttpStatus.OK, Map.of("isDeliverable", isDeliverable));
     }
 
     private LoginUser getUser(String mobile) {

@@ -21,7 +21,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    private final LoginUserRepo userRepo;
     private final JwtService jwtService;
     private final LoginUserRepo loginUserRepo;
     private final OtpService otpService;
@@ -38,7 +37,7 @@ public class AuthServiceImpl implements AuthService {
         if (!otpService.verifyOtp(request.mobile(), request.otp())) throw new AuthException("Invalid OTP!");
         LoginUser user = loginUserRepo
                 .findByMobile(request.mobile())
-                .orElse(userRepo.save(new LoginUser(request.mobile())));
+                .orElseGet(() -> loginUserRepo.save(new LoginUser(request.mobile())));
         boolean isProfileCompleted = user.isProfileCompleted();
         String accessToken = jwtService.generateToken(user.getMobile(), user.getId(), user.getRole());
         return new Response("Verification successful", HttpStatus.OK,

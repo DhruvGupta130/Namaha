@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UserException.class)
     public ResponseEntity<ErrorResponse> handleUserException(UserException ex) {
         log.error("User Exception", ex);
-        return getErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "User Error", ex.getMessage());
+        return getErrorResponse(HttpStatus.BAD_REQUEST, "User Error", ex.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

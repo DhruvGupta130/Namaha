@@ -47,4 +47,10 @@ public class UserController {
         Response response = userService.updateAddress(principal.getName(), addressDto);
         return new ResponseEntity<>(response, response.status());
     }
+
+    @GetMapping("/service/check")
+    public ResponseEntity<Response> checkServiceStatus(Principal principal) {
+        Response response = userService.checkServiceArea(principal.getName());
+        return new ResponseEntity<>(response, response.status());
+    }
 }

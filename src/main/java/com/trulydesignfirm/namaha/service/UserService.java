@@ -16,4 +16,6 @@ public interface UserService {
     Response updateUser(String mobile, @Valid UpdateUser request);
 
     Response updateAddress(String mobile, AddressDto addressDto);
+
+    Response checkServiceArea(String mobile);
 }
