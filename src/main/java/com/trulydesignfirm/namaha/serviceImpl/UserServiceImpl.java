@@ -30,19 +30,21 @@ public class UserServiceImpl implements UserService {
     private final ServiceAreaService serviceAreaService;
 
     @Override
-    public UserInfo getUserInfo(String mobile) {
-        return loginUserRepo
+    public Response getUserInfo(String mobile) {
+        UserInfo userInfo = loginUserRepo
                 .findByMobile(mobile)
                 .map(UserInfo::new)
                 .orElseThrow(() -> new AuthException("User Not found!"));
+        return new Response("User Info Retrieved Successfully", HttpStatus.OK, userInfo);
     }
 
     @Override
-    public AddressDto getUserAddress(String mobile) {
-        return addressRepository
+    public Response getUserAddress(String mobile) {
+        AddressDto addressDto = addressRepository
                 .findByUser_Mobile(mobile)
                 .map(AddressDto::new)
                 .orElseThrow(() -> new UserException("No Address Found!"));
+        return new Response("User Address Retrieved Successfully", HttpStatus.OK, addressDto);
     }
 
     @Override

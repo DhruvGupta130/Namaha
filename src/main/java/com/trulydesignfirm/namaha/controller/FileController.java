@@ -1,5 +1,6 @@
 package com.trulydesignfirm.namaha.controller;
 
+import com.trulydesignfirm.namaha.dto.Response;
 import com.trulydesignfirm.namaha.service.FileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,14 +19,16 @@ public class FileController {
 
     @PostMapping("/upload-image")
     @Operation(summary = "Upload an image file")
-    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
-        return ResponseEntity.ok(fileService.saveFile(file).getFileUrl());
+    public ResponseEntity<Response> uploadImage(@RequestParam("file") MultipartFile file) {
+        Response response = fileService.saveFile(file);
+        return new ResponseEntity<>(response, response.status());
     }
 
     @DeleteMapping("/delete-image")
     @Operation(summary = "Delete an image file")
-    public ResponseEntity<String> deleteImage(@RequestParam("fileName") String fileName) {
-        return ResponseEntity.ok(fileService.deleteFile(fileName));
+    public ResponseEntity<Response> deleteImage(@RequestParam("fileName") String fileName) {
+        Response response = fileService.deleteFile(fileName);
+        return new ResponseEntity<>(response, response.status());
     }
 
 }

@@ -3,7 +3,6 @@ package com.trulydesignfirm.namaha.controller;
 import com.trulydesignfirm.namaha.dto.AddressDto;
 import com.trulydesignfirm.namaha.dto.Response;
 import com.trulydesignfirm.namaha.dto.UpdateUser;
-import com.trulydesignfirm.namaha.dto.UserInfo;
 import com.trulydesignfirm.namaha.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,14 +23,16 @@ public class UserController {
 
     @GetMapping("/info")
     @Operation(summary = "Retrieve user details")
-    public ResponseEntity<UserInfo> getUserInfo(Principal principal) {
-        return ResponseEntity.ok(userService.getUserInfo(principal.getName()));
+    public ResponseEntity<Response> getUserInfo(Principal principal) {
+        Response response = userService.getUserInfo(principal.getName());
+        return new ResponseEntity<>(response, response.status());
     }
 
     @GetMapping("/address")
     @Operation(summary = "Retrieve user address")
-    public ResponseEntity<AddressDto> getAddress(Principal principal) {
-        return ResponseEntity.ok(userService.getUserAddress(principal.getName()));
+    public ResponseEntity<Response> getAddress(Principal principal) {
+        Response response = userService.getUserAddress(principal.getName());
+        return new ResponseEntity<>(response, response.status());
     }
 
     @PutMapping("/update")

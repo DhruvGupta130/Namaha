@@ -1,15 +1,17 @@
 package com.trulydesignfirm.namaha.serviceImpl;
 
+import com.trulydesignfirm.namaha.constant.ProductCategory;
 import com.trulydesignfirm.namaha.dto.ProductDto;
 import com.trulydesignfirm.namaha.dto.Response;
 import com.trulydesignfirm.namaha.model.Product;
 import com.trulydesignfirm.namaha.repository.ProductRepo;
 import com.trulydesignfirm.namaha.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -39,12 +41,30 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductDto> getAllProducts() {
-        return productRepo
-                .findAll()
-                .stream()
-                .map(ProductDto::new)
-                .toList();
+    public Response getAllProducts(int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<ProductDto> productDtos = productRepo
+                .findAll(pageable)
+                .map(ProductDto::new);
+        return new Response("All Products fetched", HttpStatus.OK, productDtos);
+    }
+
+    @Override
+    public Response getFlowerStore(int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<ProductDto> productDtos = productRepo
+                .findAllByCategory(ProductCategory.FLOWER_STORE, pageable)
+                .map(ProductDto::new);
+        return new Response("Flower Store Items fetched", HttpStatus.OK, productDtos);
+    }
+
+    @Override
+    public Response getPoojaStore(int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<ProductDto> productDtos = productRepo
+                .findAllByCategory(ProductCategory.POOJA_STORE, pageable)
+                .map(ProductDto::new);
+        return new Response("Flower Store Items fetched", HttpStatus.OK, productDtos);
     }
 
     private void addProductDetails(ProductDto dto, Product product) {
