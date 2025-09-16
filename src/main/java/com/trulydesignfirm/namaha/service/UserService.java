@@ -11,11 +11,9 @@ import org.springframework.stereotype.Service;
 public interface UserService {
     UserInfo getUserInfo(String mobile);
 
-    Response resetPassword(String mobile, String currentPassword, String newPassword);
+    AddressDto getUserAddress(String mobile);
 
     Response updateUser(String mobile, @Valid UpdateUser request);
-
-    AddressDto getUserAddress(String mobile);
 
     Response updateAddress(String mobile, AddressDto addressDto);
 }

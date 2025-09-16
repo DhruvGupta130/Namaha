@@ -1,8 +1,8 @@
 package com.trulydesignfirm.namaha.controller;
 
-import com.trulydesignfirm.namaha.dto.LoginRequest;
+import com.trulydesignfirm.namaha.dto.OtpRequest;
 import com.trulydesignfirm.namaha.dto.Response;
-import com.trulydesignfirm.namaha.dto.SignupRequest;
+import com.trulydesignfirm.namaha.dto.VerifyOtp;
 import com.trulydesignfirm.namaha.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,29 +16,21 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Tag(name = "Authentication", description = "Authentication related operations")
 public class AuthController {
+
     private final AuthService authService;
 
-    @PostMapping("/get-otp")
-    @Operation(summary = "Get OTP for signup")
-    public ResponseEntity<Response> getOtp(@RequestBody @Valid SignupRequest request) {
+    @PostMapping("/send-otp")
+    @Operation(summary = "Step1 -> Get OTP for login/verifyOtp")
+    public ResponseEntity<Response> getOtp(@RequestBody @Valid OtpRequest request) {
         Response response = authService.getOtp(request);
         return new ResponseEntity<>(response, response.status());
     }
 
-    @PostMapping("/signup")
-    @Operation(summary = "Signup a new user")
-    public ResponseEntity<Response> signup(
-            @RequestBody @Valid SignupRequest request,
-            @RequestParam String otp
-    ) {
-        Response response = authService.signup(request, otp);
+    @PostMapping("/verify-otp")
+    @Operation(summary = "Step2 -> Login/verifyOtp a user")
+    public ResponseEntity<Response> verifyOtp(@RequestBody @Valid VerifyOtp request) {
+        Response response = authService.verifyOtp(request);
         return new ResponseEntity<>(response, response.status());
     }
 
-    @PostMapping("/login")
-    @Operation(summary = "Login an existing user")
-    public ResponseEntity<Response> login(@RequestBody @Valid LoginRequest request) {
-        Response response = authService.login(request);
-        return new ResponseEntity<>(response, response.status());
-    }
 }

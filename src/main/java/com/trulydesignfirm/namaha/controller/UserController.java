@@ -28,29 +28,17 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserInfo(principal.getName()));
     }
 
-    @PutMapping("/reset-password")
-    @Operation(summary = "Reset user's password")
-    public ResponseEntity<Response> resetPassword(
-            Principal principal,
-            @RequestParam String currentPassword,
-            @RequestParam String newPassword
-    ) {
-        Response response = userService.resetPassword(principal.getName(), currentPassword, newPassword);
-        return new ResponseEntity<>(response, response.status());
+    @GetMapping("/address")
+    @Operation(summary = "Retrieve user address")
+    public ResponseEntity<AddressDto> getAddress(Principal principal) {
+        return ResponseEntity.ok(userService.getUserAddress(principal.getName()));
     }
-
 
     @PutMapping("/update")
     @Operation(summary = "Update user details")
     public ResponseEntity<Response> update(Principal principal, @RequestBody @Valid UpdateUser request) {
         Response response = userService.updateUser(principal.getName(), request);
         return new ResponseEntity<>(response, response.status());
-    }
-
-    @GetMapping("/address")
-    @Operation(summary = "Retrieve user address")
-    public ResponseEntity<AddressDto> getAddress(Principal principal) {
-        return ResponseEntity.ok(userService.getUserAddress(principal.getName()));
     }
 
     @PutMapping("/address")

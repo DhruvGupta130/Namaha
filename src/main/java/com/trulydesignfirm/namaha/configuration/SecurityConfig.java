@@ -97,7 +97,6 @@ public class SecurityConfig {
         return username -> loginUserRepo.findByMobile(username)
                 .map(user -> org.springframework.security.core.userdetails.User
                         .withUsername(user.getMobile())
-                        .password(user.getPassword())
                         .roles(user.getRole().toString())
                         .build())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with mobile: " + username));
