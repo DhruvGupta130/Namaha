@@ -35,6 +35,9 @@ spring:
       cloud-name: ${CLOUDINARY_CLOUD_NAME}
       api-key: ${CLOUDINARY_API_KEY}
       api-secret: ${CLOUDINARY_API_SECRET}
+  threads:
+    virtual:
+      enabled: true
 jwt:
   public-key: ${PUBLIC_KEY:classpath:public.pem}
   private-key: ${PRIVATE_KEY:classpath:private.pem}

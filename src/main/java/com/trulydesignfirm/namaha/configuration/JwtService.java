@@ -17,6 +17,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class JwtService {
+
     private final JwtEncoder jwtEncoder;
     private final JwtDecoder jwtDecoder;
 
