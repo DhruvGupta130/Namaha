@@ -2,7 +2,9 @@ package com.trulydesignfirm.namaha.controller;
 
 import com.trulydesignfirm.namaha.dto.ProductDto;
 import com.trulydesignfirm.namaha.dto.Response;
+import com.trulydesignfirm.namaha.dto.ServiceAreaDto;
 import com.trulydesignfirm.namaha.service.ProductService;
+import com.trulydesignfirm.namaha.service.ServiceAreaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
 
     private final ProductService productService;
+    private final ServiceAreaService serviceAreaService;
 
     @GetMapping("/product/variety")
     @Operation(summary = "Get all product varieties")
@@ -88,6 +91,44 @@ public class AdminController {
     @Operation(summary = "Delete a product by ID")
     public ResponseEntity<Response> deleteProduct(@PathVariable Long id) {
         Response response = productService.deleteProduct(id);
+        return new ResponseEntity<>(response, response.status());
+    }
+
+    @GetMapping("/service/areas")
+    @Operation(summary = "Get all service areas")
+    public ResponseEntity<Response> getAllServiceAreas(
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize
+    ) {
+        Response response = serviceAreaService.getServiceAreas(pageNumber, pageSize);
+        return new ResponseEntity<>(response, response.status());
+    }
+
+    @PostMapping("/service/areas")
+    @Operation(summary = "Create a new service area")
+    public ResponseEntity<Response> createServiceArea(@RequestBody @Valid ServiceAreaDto request) {
+        Response response = serviceAreaService.createServiceArea(request);
+        return new ResponseEntity<>(response, response.status());
+    }
+
+    @PutMapping("/service/areas/{id}")
+    @Operation(summary = "Update an existing service area")
+    public ResponseEntity<Response> updateServiceArea(@PathVariable Long id, @RequestBody @Valid ServiceAreaDto request) {
+        Response response = serviceAreaService.updateServiceArea(id, request);
+        return new ResponseEntity<>(response, response.status());
+    }
+
+    @PatchMapping("/service/areas/{id}")
+    @Operation(summary = "Update the availability status of a service area")
+    public ResponseEntity<Response> updateServiceAreaStatus(@PathVariable Long id) {
+        Response response = serviceAreaService.updateServiceAvailabilityStatus(id);
+        return new ResponseEntity<>(response, response.status());
+    }
+
+    @DeleteMapping("/service/areas/{id}")
+    @Operation(summary = "Delete a service area by ID")
+    public ResponseEntity<Response> deleteServiceArea(@PathVariable Long id) {
+        Response response = serviceAreaService.deleteServiceArea(id);
         return new ResponseEntity<>(response, response.status());
     }
 }

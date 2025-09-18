@@ -1,14 +1,15 @@
 package com.trulydesignfirm.namaha.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.trulydesignfirm.namaha.model.Product;
-import com.trulydesignfirm.namaha.model.ProductCategory;
-import com.trulydesignfirm.namaha.model.ProductVariety;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 public record ProductDto(
+
+        @JsonProperty(access = JsonProperty.Access.READ_ONLY)
         Long id,
 
         @NotBlank(message = "Product title is required")
@@ -26,24 +27,22 @@ public record ProductDto(
         Integer weightInGrams,
 
         @NotNull(message = "Flower variety is required")
-        ProductVariety variety,
+        String variety,
 
         @NotNull(message = "Product Category is required")
-        ProductCategory category,
+        String category,
 
-        @DecimalMin(value = "0.01", message = "Subscription price must be greater than 0")
         BigDecimal subscriptionPrice,
 
-        @NotNull(message = "Duration in days is required")
-        @Min(value = 0, message = "Duration cannot be negative")
         Integer durationInDays,
 
-        @NotNull(message = "One-time price is required")
-        @DecimalMin(value = "0.01", message = "One-time price must be greater than 0")
+        @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+        Boolean isSubscription,
+
         BigDecimal oneTimePrice,
 
-        @NotNull(message = "One-time purchase flag is required")
-        Boolean oneTime
+        @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+        Boolean isOneTime
 ) {
     public ProductDto(Product product) {
         this(
@@ -52,12 +51,13 @@ public record ProductDto(
                 product.getImages(),
                 product.getDescription(),
                 product.getWeightInGrams(),
-                product.getVariety(),
-                product.getCategory(),
+                product.getVariety().getName(),
+                product.getCategory().getName(),
                 product.getSubscriptionPrice(),
                 product.getDurationInDays(),
+                product.isSubscription(),
                 product.getOneTimePrice(),
-                product.getOneTime()
+                product.isOneTimePurchase()
         );
     }
 }

@@ -16,7 +16,7 @@ import java.security.Principal;
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
-@Tag(name = "User", description = "User related operations")
+@Tag(name = "User", description = "Routes only exposed to user")
 public class UserController {
 
     private final UserService userService;

@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -16,4 +17,6 @@ public interface SubscriptionRepo extends JpaRepository<Subscription, UUID> {
     boolean existsByUserAndProductAndStatus(LoginUser user, Product product, SubscriptionStatus status);
 
     Page<Subscription> findAllByUser_Mobile(String userMobile, Pageable pageable);
+
+    Optional<Subscription> findByUser_MobileAndId(String mobile, UUID id);
 }

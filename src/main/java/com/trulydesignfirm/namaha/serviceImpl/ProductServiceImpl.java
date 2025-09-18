@@ -3,7 +3,9 @@ package com.trulydesignfirm.namaha.serviceImpl;
 import com.trulydesignfirm.namaha.constant.DeliverySlot;
 import com.trulydesignfirm.namaha.constant.SubscriptionStatus;
 import com.trulydesignfirm.namaha.dto.*;
+import com.trulydesignfirm.namaha.exception.ProductException;
 import com.trulydesignfirm.namaha.exception.ResourceNotFoundException;
+import com.trulydesignfirm.namaha.exception.SubscriptionException;
 import com.trulydesignfirm.namaha.exception.UserException;
 import com.trulydesignfirm.namaha.model.*;
 import com.trulydesignfirm.namaha.repository.*;
@@ -18,8 +20,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -33,12 +37,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Response getProductVarieties() {
-        List<ProductVarietyDto> productVarietyDtos = productVarietyRepo
+        List<String> productVarieties = productVarietyRepo
                 .findAll()
                 .stream()
-                .map(ProductVarietyDto::new)
+                .map(ProductVariety::getName)
                 .toList();
-        return new Response("All Product Varieties fetched", HttpStatus.OK, productVarietyDtos);
+        return new Response("All Product Varieties fetched", HttpStatus.OK, productVarieties);
     }
 
     @Override
@@ -63,12 +67,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Response getProductCategories() {
-        List<ProductCategoryDto> productCategoryDtos = productCategoryRepo
+        List<String> productCategories = productCategoryRepo
                 .findAll()
                 .stream()
-                .map(ProductCategoryDto::new)
+                .map(ProductCategory::getName)
                 .toList();
-        return new Response("All Product Categories fetched", HttpStatus.OK, productCategoryDtos);
+        return new Response("All Product Categories fetched", HttpStatus.OK, productCategories);
     }
 
     @Override
@@ -119,6 +123,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public Response getAllProducts(int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<ProductDto> productDtos = productRepo
@@ -174,16 +179,54 @@ public class ProductServiceImpl implements ProductService {
         return new Response("Subscription created successfully!", HttpStatus.CREATED, null);
     }
 
+    @Override
+    public Response updateSubscription(String mobile, UUID subscriptionId, SubscriptionStatus status, DeliverySlot slot) {
+        Subscription subscription = subscriptionRepo
+                .findByUser_MobileAndId(mobile, subscriptionId)
+                .orElseThrow(() -> new SubscriptionException("Subscription not found!"));
+        if (!subscription.getStatus().isUpdatable()) {
+            throw new SubscriptionException("Subscription cannot be updated! Create a new subscription instead");
+        }
+        if (status == null && slot == null) {
+            throw new SubscriptionException("Nothing to update! Provide status or slot.");
+        }
+        if (status != null) subscription.setStatus(status);
+        if (slot != null) subscription.setDeliverySlot(slot);
+        subscriptionRepo.save(subscription);
+        return new Response("Subscription updated successfully!", HttpStatus.OK, null);
+    }
+
     private void addProductDetails(ProductDto dto, Product product) {
+        boolean hasValidSubscription =
+                dto.durationInDays() != null && dto.durationInDays() > 0 &&
+                        dto.subscriptionPrice() != null && dto.subscriptionPrice().compareTo(BigDecimal.ZERO) > 0;
+        boolean hasValidOneTime =
+                dto.oneTimePrice() != null && dto.oneTimePrice().compareTo(BigDecimal.ZERO) > 0;
+
+        // ✅ Validation rule: at least one option must be valid
+        if (!hasValidSubscription && !hasValidOneTime) {
+            throw new ProductException(
+                    "Product must be either a valid subscription or a valid one-time purchase (or both)."
+            );
+        }
         product.setTitle(dto.title());
         product.setDescription(dto.description());
         product.setImages(dto.images());
         product.setWeightInGrams(dto.weightInGrams());
-        product.setVariety(dto.variety());
-        product.setDurationInDays(dto.durationInDays());
-        product.setSubscriptionPrice(dto.subscriptionPrice());
-        product.setOneTime(dto.oneTime());
-        product.setOneTimePrice(dto.oneTimePrice());
+        product.setVariety(new ProductVariety(dto.variety()));
+        product.setCategory(new ProductCategory(dto.category()));
+
+        // ---- Set subscription details ----
+        if (hasValidSubscription) {
+            product.setDurationInDays(dto.durationInDays());
+            product.setSubscriptionPrice(dto.subscriptionPrice());
+        } else {
+            product.setDurationInDays(null);
+            product.setSubscriptionPrice(null);
+        }
+
+        // ---- Set one-time details ----
+        product.setOneTimePrice(hasValidOneTime ? dto.oneTimePrice() : null);
         productRepo.save(product);
     }
 }

@@ -54,6 +54,24 @@ public class GlobalExceptionHandler {
         return getErrorResponse(HttpStatus.BAD_REQUEST, "User Error", ex.getMessage());
     }
 
+    @ExceptionHandler(ProductException.class)
+    public ResponseEntity<ErrorResponse> handleProductException(ProductException ex) {
+        log.error("Product Exception", ex);
+        return getErrorResponse(HttpStatus.BAD_REQUEST, "Product Error", ex.getMessage());
+    }
+
+    @ExceptionHandler(SubscriptionException.class)
+    public ResponseEntity<ErrorResponse> handleSubscriptionException(SubscriptionException ex) {
+        log.error("Subscription Exception", ex);
+        return getErrorResponse(HttpStatus.BAD_REQUEST, "Subscription Error", ex.getMessage());
+    }
+
+    @ExceptionHandler(ServiceAreaException.class)
+    public ResponseEntity<ErrorResponse> handleServiceAreaException(ServiceAreaException ex) {
+        log.error("Service Area Exception", ex);
+        return getErrorResponse(HttpStatus.BAD_REQUEST, "Service Area Error", ex.getMessage());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
         log.warn("Validation failed", ex);

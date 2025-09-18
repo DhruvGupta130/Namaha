@@ -30,7 +30,7 @@ public class Product {
     @Column(nullable = false)
     private String description;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "product_images",
             joinColumns = @JoinColumn(name = "product_id")
@@ -42,24 +42,20 @@ public class Product {
     @Column(nullable = false)
     private Integer weightInGrams;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "variety", nullable = false)
     private ProductVariety variety;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category", nullable = false)
     private ProductCategory category;
 
-    @Column(nullable = false)
-    private Integer durationInDays = 0;
+    private Integer durationInDays;
 
     @Column(precision = 10, scale = 2)
     private BigDecimal subscriptionPrice;
 
-    @Column(nullable = false)
-    private Boolean oneTime = false;
-
-    @Column(nullable = false, precision = 10, scale = 2)
+    @Column(precision = 10, scale = 2)
     private BigDecimal oneTimePrice;
 
     private boolean active = true;
@@ -69,6 +65,6 @@ public class Product {
     }
 
     public boolean isOneTimePurchase() {
-        return oneTime != null && oneTime;
+        return oneTimePrice != null && oneTimePrice.compareTo(BigDecimal.ZERO) > 0;
     }
 }

@@ -1,10 +1,13 @@
 package com.trulydesignfirm.namaha.service;
 
 import com.trulydesignfirm.namaha.constant.DeliverySlot;
+import com.trulydesignfirm.namaha.constant.SubscriptionStatus;
 import com.trulydesignfirm.namaha.dto.ProductDto;
 import com.trulydesignfirm.namaha.dto.Response;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 public interface ProductService {
@@ -35,4 +38,6 @@ public interface ProductService {
     Response getAllDeliverySlots();
 
     Response createSubscription(String mobile, Long productId, DeliverySlot slot);
+
+    Response updateSubscription(String mobile, UUID subscriptionId, SubscriptionStatus status, DeliverySlot slot);
 }

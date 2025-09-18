@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/delivery")
 @RequiredArgsConstructor
-@Tag(name = "Delivery", description = "Delivery related operations")
+@Tag(name = "Delivery", description = "Routes only exposed to delivery partners")
 public class DeliveryController {
 
     @GetMapping("/pending")

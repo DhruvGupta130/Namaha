@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ServiceAreaRepository extends JpaRepository<ServiceArea, Long> {
+public interface ServiceAreaRepo extends JpaRepository<ServiceArea, Long> {
 
     @Query("""
             SELECT s FROM ServiceArea s

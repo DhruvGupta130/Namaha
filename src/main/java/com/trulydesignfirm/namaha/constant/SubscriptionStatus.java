@@ -4,5 +4,9 @@ public enum SubscriptionStatus {
     ACTIVE,
     PAUSED,
     CANCELLED,
-    EXPIRED
+    EXPIRED;
+
+    public boolean isUpdatable() {
+        return this == ACTIVE || this == PAUSED;
+    }
 }

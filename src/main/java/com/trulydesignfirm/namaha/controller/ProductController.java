@@ -1,6 +1,7 @@
 package com.trulydesignfirm.namaha.controller;
 
 import com.trulydesignfirm.namaha.constant.DeliverySlot;
+import com.trulydesignfirm.namaha.constant.SubscriptionStatus;
 import com.trulydesignfirm.namaha.dto.Response;
 import com.trulydesignfirm.namaha.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/product")
@@ -42,13 +44,24 @@ public class ProductController {
         return new ResponseEntity<>(response, response.status());
     }
 
-    @PostMapping("/subscription/create")
+    @PostMapping("/subscription/create/{productId}")
     public ResponseEntity<Response> createNewSubscription(
             Principal principal,
-            @RequestParam("productId") Long productId,
+            @PathVariable Long productId,
             @RequestParam("deliverySlot") DeliverySlot slot
     ) {
         Response response = productService.createSubscription(principal.getName(), productId, slot);
+        return new ResponseEntity<>(response, response.status());
+    }
+
+    @PutMapping("/subscription/update/{subscriptionId}")
+    public ResponseEntity<Response> updateSubscription(
+            Principal principal,
+            @PathVariable UUID subscriptionId,
+            @RequestParam(required = false) SubscriptionStatus status,
+            @RequestParam(required = false) DeliverySlot slot
+    ) {
+        Response response = productService.updateSubscription(principal.getName(), subscriptionId, status, slot);
         return new ResponseEntity<>(response, response.status());
     }
 }

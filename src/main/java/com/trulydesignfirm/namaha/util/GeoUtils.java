@@ -11,7 +11,7 @@ public class GeoUtils {
                 + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
                 * Math.sin(dLon / 2) * Math.sin(dLon / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return EARTH_RADIUS_KM * c;
+        return Math.floor(EARTH_RADIUS_KM * c);
     }
 
     public static double[] boundingBox(double lat, double lon, double radiusKm) {

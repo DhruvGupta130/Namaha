@@ -28,8 +28,6 @@ spring:
     cors:
       allowed-origins:
         - http://localhost:3000
-        - http://localhost:8080
-        - https://namahaapp.onrender.com
   storage:
     cloudinary:
       cloud-name: ${CLOUDINARY_CLOUD_NAME}
