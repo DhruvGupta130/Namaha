@@ -21,13 +21,6 @@ public class AdminController {
     private final ProductService productService;
     private final ServiceAreaService serviceAreaService;
 
-    @GetMapping("/product/variety")
-    @Operation(summary = "Get all product varieties")
-    public ResponseEntity<Response> getAllVarieties() {
-        Response response = productService.getProductVarieties();
-        return new ResponseEntity<>(response, response.status());
-    }
-
     @PostMapping("/product/variety")
     @Operation(summary = "Create a new product variety")
     public ResponseEntity<Response> createVariety(@RequestParam("variety") String varietyName) {
@@ -39,13 +32,6 @@ public class AdminController {
     @Operation(summary = "Delete a product variety")
     public ResponseEntity<Response> deleteVariety(@RequestParam("variety") String varietyName) {
         Response response = productService.deleteVariety(varietyName);
-        return new ResponseEntity<>(response, response.status());
-    }
-
-    @GetMapping("/product/category")
-    @Operation(summary = "Get all product categories")
-    public ResponseEntity<Response> getAllCategories() {
-        Response response = productService.getProductCategories();
         return new ResponseEntity<>(response, response.status());
     }
 
