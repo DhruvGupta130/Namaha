@@ -34,6 +34,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductCategoryRepo productCategoryRepo;
     private final LoginUserRepo loginUserRepo;
     private final SubscriptionRepo subscriptionRepo;
+    private final AddressRepo addressRepo;
 
     @Override
     public Response getProductVarieties() {
@@ -113,7 +114,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Response deleteProduct(Long id) {
-        return productRepo.findByIdAndActiveTrue(id)
+        return productRepo
+                .findByIdAndActiveTrue(id)
                 .map(product -> {
                     product.setActive(false);
                     productRepo.save(product);
@@ -162,19 +164,22 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Response createSubscription(String mobile, Long productId, DeliverySlot slot) {
+    public Response createSubscription(String mobile, SubscriptionRequestDto request) {
         LoginUser user = loginUserRepo
                 .findByMobile(mobile)
                 .orElseThrow(() -> new UserException("User not found!"));
         Product product = productRepo
-                .findById(productId)
+                .findByIdAndActiveTrue(request.productId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found!"));
+        Address address = addressRepo
+                .findByIdAndUser_MobileAndActiveTrue(request.addressId(), mobile)
+                .orElseThrow(() -> new ResourceNotFoundException("No such address not found!"));
         boolean alreadySubscribed = subscriptionRepo
-                .existsByUserAndProductAndStatus(user, product, SubscriptionStatus.ACTIVE);
+                .existsByUserAndProductAndStatusAndAddress(user, product, SubscriptionStatus.ACTIVE, address);
         if (alreadySubscribed) {
             return new Response("You already have an active subscription for this product.", HttpStatus.BAD_REQUEST, null);
         }
-        Subscription subscription = new Subscription(user, product, SubscriptionStatus.ACTIVE, slot);
+        Subscription subscription = new Subscription(user, product, SubscriptionStatus.ACTIVE, request.slot(), address);
         subscriptionRepo.save(subscription);
         return new Response("Subscription created successfully!", HttpStatus.CREATED, null);
     }
@@ -184,13 +189,18 @@ public class ProductServiceImpl implements ProductService {
         Subscription subscription = subscriptionRepo
                 .findByUser_MobileAndId(mobile, subscriptionId)
                 .orElseThrow(() -> new SubscriptionException("Subscription not found!"));
-        if (!subscription.getStatus().isUpdatable()) {
+        if (!subscription.isUpdatable()) {
             throw new SubscriptionException("Subscription cannot be updated! Create a new subscription instead");
         }
         if (status == null && slot == null) {
             throw new SubscriptionException("Nothing to update! Provide status or slot.");
         }
-        if (status != null) subscription.setStatus(status);
+        if (status != null) {
+            if (status != SubscriptionStatus.PAUSED && status != SubscriptionStatus.CANCELLED) {
+                throw new SubscriptionException("You can only pause or cancel a subscription!");
+            }
+            subscription.setStatus(status);
+        }
         if (slot != null) subscription.setDeliverySlot(slot);
         subscriptionRepo.save(subscription);
         return new Response("Subscription updated successfully!", HttpStatus.OK, null);

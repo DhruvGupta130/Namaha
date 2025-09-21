@@ -47,8 +47,8 @@ public class LoginUser {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private Address address;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Address> addresses;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Subscription> subscriptions;
@@ -59,7 +59,6 @@ public class LoginUser {
 
     public boolean isProfileCompleted() {
         return name != null && !name.isBlank() &&
-                email != null && !email.isBlank() &&
-                address != null;
+                addresses != null && !addresses.isEmpty();
     }
 }

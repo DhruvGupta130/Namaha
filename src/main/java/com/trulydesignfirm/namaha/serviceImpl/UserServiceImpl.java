@@ -17,8 +17,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -26,7 +26,7 @@ import java.util.Map;
 public class UserServiceImpl implements UserService {
 
     private final LoginUserRepo loginUserRepo;
-    private final AddressRepo addressRepository;
+    private final AddressRepo addressRepo;
     private final ServiceAreaService serviceAreaService;
 
     @Override
@@ -40,15 +40,43 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response getUserAddress(String mobile) {
-        AddressDto addressDto = addressRepository
-                .findByUser_Mobile(mobile)
+        List<AddressDto> addressDto = addressRepo
+                .findByUser_MobileAndActiveTrue(mobile)
+                .stream()
                 .map(AddressDto::new)
-                .orElseThrow(() -> new UserException("No Address Found!"));
+                .toList();
         return new Response("User Address Retrieved Successfully", HttpStatus.OK, addressDto);
     }
 
     @Override
-    @Transactional
+    public Response addNewAddress(String mobile, AddressDto addressDto) {
+        Address address = new Address(getUser(mobile));
+        updateAddressFields(addressDto, address);
+        return new Response("Address Added Successfully", HttpStatus.OK, null);
+    }
+
+    @Override
+    public Response updateAddress(String mobile, Long addressId, @Valid AddressDto addressDto) {
+        Address address = addressRepo
+                .findByIdAndUser_MobileAndActiveTrue(addressId, mobile)
+                .orElseThrow(() -> new ResourceNotFoundException("No such Address Found!"));
+        updateAddressFields(addressDto, address);
+        return new Response("Address Updated Successfully", HttpStatus.OK, null);
+    }
+
+    @Override
+    public Response deleteAddress(String mobile, Long addressId) {
+        return addressRepo
+                .findByIdAndUser_MobileAndActiveTrue(addressId, mobile)
+                .map(address -> {
+                    address.setActive(false);
+                    addressRepo.save(address);
+                    return new Response("Address Deleted Successfully", HttpStatus.OK, null);
+                })
+                .orElseThrow(() -> new ResourceNotFoundException("No Address Found!"));
+    }
+
+    @Override
     public Response updateUser(String mobile, @Valid UpdateUser request) {
         LoginUser user = getUser(mobile);
         user.setName(request.name());
@@ -58,26 +86,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response updateAddress(String mobile, AddressDto addressDto) {
-        LoginUser user = getUser(mobile);
-        Address address = addressRepository
-                .findByUser(user)
-                .orElse(new Address(user));
-        address.setStreet(addressDto.street());
-        address.setCity(addressDto.city());
-        address.setState(addressDto.state());
-        address.setCountry(addressDto.country());
-        address.setPinCode(addressDto.pinCode());
-        address.setLatitude(addressDto.latitude());
-        address.setLongitude(addressDto.longitude());
-        addressRepository.save(address);
-        return new Response("Address Updated Successfully", HttpStatus.OK, null);
-    }
-
-    @Override
-    public Response checkServiceArea(String mobile) {
-        Address address = addressRepository
-                .findByUser_Mobile(mobile)
+    public Response checkServiceArea(String mobile, Long addressId) {
+        Address address = addressRepo
+                .findByIdAndUser_MobileAndActiveTrue(addressId, mobile)
                 .orElseThrow(() -> new ResourceNotFoundException("No Address Found!"));
         boolean isDeliverable = serviceAreaService.isDeliverable(address.getLatitude(), address.getLongitude());
         String message = isDeliverable ? "Area is serviceable" : "Area is not serviceable";
@@ -88,5 +99,20 @@ public class UserServiceImpl implements UserService {
         return loginUserRepo
                 .findByMobile(mobile)
                 .orElseThrow(() -> new UserException("User not found!"));
+    }
+
+    private void updateAddressFields(AddressDto addressDto, Address address) {
+        address.setHouse(addressDto.house());
+        address.setArea(addressDto.area());
+        address.setDirections(addressDto.directions());
+        address.setStreet(addressDto.street());
+        address.setCity(addressDto.city());
+        address.setState(addressDto.state());
+        address.setCountry(addressDto.country());
+        address.setPinCode(addressDto.pinCode());
+        address.setAddressType(addressDto.addressType());
+        address.setLatitude(addressDto.latitude());
+        address.setLongitude(addressDto.longitude());
+        addressRepo.save(address);
     }
 }

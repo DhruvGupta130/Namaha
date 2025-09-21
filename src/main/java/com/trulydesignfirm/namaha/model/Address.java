@@ -1,5 +1,6 @@
 package com.trulydesignfirm.namaha.model;
 
+import com.trulydesignfirm.namaha.constant.AddressType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,14 @@ public class Address {
     private Long id;
 
     @Column(nullable = false)
+    private String house;
+
+    private String area;
+
+    @Column(columnDefinition = "TEXT")
+    private String directions;
+
+    @Column(nullable = false)
     private String street;
 
     @Column(nullable = false)
@@ -34,6 +43,10 @@ public class Address {
     @Column(nullable = false)
     private String pinCode;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AddressType addressType;
+
     @Column(nullable = false)
     private Double latitude;
 
@@ -46,8 +59,10 @@ public class Address {
     @UpdateTimestamp
     private Instant updatedAt;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private boolean active = true;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private LoginUser user;
 
     public Address(LoginUser user) {

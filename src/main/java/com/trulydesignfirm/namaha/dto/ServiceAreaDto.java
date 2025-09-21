@@ -1,12 +1,10 @@
 package com.trulydesignfirm.namaha.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.trulydesignfirm.namaha.model.ServiceArea;
 import jakarta.validation.constraints.*;
 
 public record ServiceAreaDto(
 
-        @JsonProperty(access = JsonProperty.Access.READ_ONLY)
         Long id,
 
         @NotBlank(message = "Service area name is required")

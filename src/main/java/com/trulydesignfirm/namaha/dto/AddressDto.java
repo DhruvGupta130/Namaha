@@ -1,11 +1,22 @@
 package com.trulydesignfirm.namaha.dto;
 
+import com.trulydesignfirm.namaha.constant.AddressType;
 import com.trulydesignfirm.namaha.model.Address;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 public record AddressDto(
+
+        Long id,
+
+        @NotBlank(message = "House Number is required")
+        String house,
+
+        String area,
+
+        String directions,
+
         @NotBlank(message = "Street is required")
         String street,
 
@@ -22,6 +33,9 @@ public record AddressDto(
         @Pattern(regexp = "\\d{6}", message = "PinCode must be exactly 6 digits")
         String pinCode,
 
+        @NotNull(message = "Address Type is required")
+        AddressType addressType,
+
         @NotNull(message = "Latitude is required")
         Double latitude,
 
@@ -29,6 +43,19 @@ public record AddressDto(
         Double longitude
 ) {
     public AddressDto(Address address) {
-        this(address.getStreet(), address.getCity(), address.getState(), address.getCountry(), address.getPinCode(), address.getLatitude(), address.getLongitude());
+        this(
+                address.getId(),
+                address.getHouse(),
+                address.getArea(),
+                address.getDirections(),
+                address.getStreet(),
+                address.getCity(),
+                address.getState(),
+                address.getCountry(),
+                address.getPinCode(),
+                address.getAddressType(),
+                address.getLatitude(),
+                address.getLongitude()
+        );
     }
 }

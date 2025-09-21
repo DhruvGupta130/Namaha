@@ -1,8 +1,11 @@
 package com.trulydesignfirm.namaha.controller;
 
 import com.trulydesignfirm.namaha.constant.DeliverySlot;
+import com.trulydesignfirm.namaha.constant.DeliveryStatus;
 import com.trulydesignfirm.namaha.constant.SubscriptionStatus;
 import com.trulydesignfirm.namaha.dto.Response;
+import com.trulydesignfirm.namaha.dto.SubscriptionRequestDto;
+import com.trulydesignfirm.namaha.service.DeliveryService;
 import com.trulydesignfirm.namaha.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +20,7 @@ import java.util.UUID;
 public class ProductController {
 
     private final ProductService productService;
+    private final DeliveryService deliveryService;
 
     @GetMapping("/all")
     public ResponseEntity<Response> getAllProductItems(
@@ -45,12 +49,8 @@ public class ProductController {
     }
 
     @PostMapping("/subscription/create/{productId}")
-    public ResponseEntity<Response> createNewSubscription(
-            Principal principal,
-            @PathVariable Long productId,
-            @RequestParam("deliverySlot") DeliverySlot slot
-    ) {
-        Response response = productService.createSubscription(principal.getName(), productId, slot);
+    public ResponseEntity<Response> createNewSubscription(Principal principal, @RequestBody SubscriptionRequestDto request) {
+        Response response = productService.createSubscription(principal.getName(), request);
         return new ResponseEntity<>(response, response.status());
     }
 
@@ -62,6 +62,17 @@ public class ProductController {
             @RequestParam(required = false) DeliverySlot slot
     ) {
         Response response = productService.updateSubscription(principal.getName(), subscriptionId, status, slot);
+        return new ResponseEntity<>(response, response.status());
+    }
+
+    @GetMapping("/deliveries")
+    public ResponseEntity<Response> getDeliveries(
+            Principal principal,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(required = false) DeliveryStatus status
+    ) {
+        Response response = deliveryService.getUserDeliveries(principal.getName(), pageNumber, pageSize, status);
         return new ResponseEntity<>(response, response.status());
     }
 }

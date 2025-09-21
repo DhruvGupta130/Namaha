@@ -9,7 +9,6 @@ import java.util.List;
 
 public record ProductDto(
 
-        @JsonProperty(access = JsonProperty.Access.READ_ONLY)
         Long id,
 
         @NotBlank(message = "Product title is required")

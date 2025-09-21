@@ -28,13 +28,6 @@ public class UserController {
         return new ResponseEntity<>(response, response.status());
     }
 
-    @GetMapping("/address")
-    @Operation(summary = "Retrieve user address")
-    public ResponseEntity<Response> getAddress(Principal principal) {
-        Response response = userService.getUserAddress(principal.getName());
-        return new ResponseEntity<>(response, response.status());
-    }
-
     @PutMapping("/update")
     @Operation(summary = "Update user details")
     public ResponseEntity<Response> update(Principal principal, @RequestBody @Valid UpdateUser request) {
@@ -42,16 +35,45 @@ public class UserController {
         return new ResponseEntity<>(response, response.status());
     }
 
-    @PutMapping("/address")
-    @Operation(summary = "Update user address")
-    public ResponseEntity<Response> updateAddress(Principal principal, @RequestBody @Valid AddressDto addressDto) {
-        Response response = userService.updateAddress(principal.getName(), addressDto);
+    @GetMapping("/address")
+    @Operation(summary = "Retrieve user addresses")
+    public ResponseEntity<Response> getAddress(Principal principal) {
+        Response response = userService.getUserAddress(principal.getName());
         return new ResponseEntity<>(response, response.status());
     }
 
-    @GetMapping("/service/check")
-    public ResponseEntity<Response> checkServiceStatus(Principal principal) {
-        Response response = userService.checkServiceArea(principal.getName());
+    @PostMapping("/address")
+    @Operation(summary = "Add new user address")
+    public ResponseEntity<Response> addAddress(
+            Principal principal,
+            @RequestBody @Valid AddressDto addressDto
+    ) {
+        Response response = userService.addNewAddress(principal.getName(), addressDto);
+        return new ResponseEntity<>(response, response.status());
+    }
+
+    @PutMapping("/address/{addressId}")
+    @Operation(summary = "Update user address")
+    public ResponseEntity<Response> updateAddress(
+            Principal principal,
+            @PathVariable Long addressId,
+            @RequestBody @Valid AddressDto addressDto
+    ) {
+        Response response = userService.updateAddress(principal.getName(), addressId, addressDto);
+        return new ResponseEntity<>(response, response.status());
+    }
+
+    @DeleteMapping("/address/{addressId}")
+    @Operation(summary = "Delete user address")
+    public ResponseEntity<Response> deleteAddress(Principal principal, @PathVariable Long addressId) {
+        Response response = userService.deleteAddress(principal.getName(), addressId);
+        return new ResponseEntity<>(response, response.status());
+    }
+
+    @GetMapping("/service/check/{addressId}")
+    @Operation(summary = "Check service status for a given address")
+    public ResponseEntity<Response> checkServiceStatus(Principal principal, @PathVariable Long addressId) {
+        Response response = userService.checkServiceArea(principal.getName(), addressId);
         return new ResponseEntity<>(response, response.status());
     }
 }

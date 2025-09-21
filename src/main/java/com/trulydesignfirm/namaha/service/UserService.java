@@ -12,9 +12,13 @@ public interface UserService {
 
     Response getUserAddress(String mobile);
 
+    Response addNewAddress(String mobile, @Valid AddressDto addressDto);
+
+    Response updateAddress(String mobile, Long addressId, @Valid AddressDto addressDto);
+
+    Response deleteAddress(String mobile, Long addressId);
+
     Response updateUser(String mobile, @Valid UpdateUser request);
 
-    Response updateAddress(String mobile, AddressDto addressDto);
-
-    Response checkServiceArea(String mobile);
+    Response checkServiceArea(String mobile, Long addressId);
 }

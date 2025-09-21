@@ -37,6 +37,10 @@ public class Subscription {
     @Enumerated(EnumType.STRING)
     private SubscriptionStatus status;
 
+    @ManyToOne
+    @JoinColumn(name = "address_id")
+    private Address address;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private DeliverySlot deliverySlot;
@@ -55,10 +59,15 @@ public class Subscription {
         return this.status == SubscriptionStatus.EXPIRED;
     }
 
-    public Subscription(LoginUser user, Product product, SubscriptionStatus status, DeliverySlot deliverySlot) {
+    public boolean isUpdatable() {
+        return this.status == SubscriptionStatus.ACTIVE || this.status == SubscriptionStatus.PAUSED;
+    }
+
+    public Subscription(LoginUser user, Product product, SubscriptionStatus status, DeliverySlot deliverySlot, Address address) {
         this.user = user;
         this.product = product;
         this.status = status;
         this.deliverySlot = deliverySlot;
+        this.address = address;
     }
 }
