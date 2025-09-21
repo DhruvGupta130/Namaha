@@ -1,5 +1,6 @@
 package com.trulydesignfirm.namaha.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.trulydesignfirm.namaha.constant.AddressType;
 import com.trulydesignfirm.namaha.model.Address;
 import jakarta.validation.constraints.NotBlank;
@@ -8,6 +9,7 @@ import jakarta.validation.constraints.Pattern;
 
 public record AddressDto(
 
+        @JsonProperty(access = JsonProperty.Access.READ_ONLY)
         Long id,
 
         @NotBlank(message = "House Number is required")
