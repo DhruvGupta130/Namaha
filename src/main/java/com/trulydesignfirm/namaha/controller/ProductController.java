@@ -3,10 +3,12 @@ package com.trulydesignfirm.namaha.controller;
 import com.trulydesignfirm.namaha.constant.DeliverySlot;
 import com.trulydesignfirm.namaha.constant.DeliveryStatus;
 import com.trulydesignfirm.namaha.constant.SubscriptionStatus;
+import com.trulydesignfirm.namaha.dto.DeliveryRequestDto;
 import com.trulydesignfirm.namaha.dto.Response;
 import com.trulydesignfirm.namaha.dto.SubscriptionRequestDto;
 import com.trulydesignfirm.namaha.service.DeliveryService;
 import com.trulydesignfirm.namaha.service.ProductService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +25,7 @@ public class ProductController {
     private final DeliveryService deliveryService;
 
     @GetMapping("/all")
+    @Operation(summary = "Get all products")
     public ResponseEntity<Response> getAllProductItems(
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "10") int pageSize,
@@ -33,6 +36,7 @@ public class ProductController {
     }
 
     @GetMapping("/subscription")
+    @Operation(summary = "Get all subscriptions")
     public ResponseEntity<Response> getSubscriptions(
             Principal principal,
             @RequestParam(defaultValue = "0") int pageNumber,
@@ -43,18 +47,21 @@ public class ProductController {
     }
 
     @GetMapping("/delivery/slots")
+    @Operation(summary = "Get all delivery slots")
     public ResponseEntity<Response> getDeliverySlots() {
         Response response = productService.getAllDeliverySlots();
         return new ResponseEntity<>(response, response.status());
     }
 
     @PostMapping("/subscription/create/{productId}")
+    @Operation(summary = "Create a new subscription")
     public ResponseEntity<Response> createNewSubscription(Principal principal, @RequestBody SubscriptionRequestDto request) {
         Response response = productService.createSubscription(principal.getName(), request);
         return new ResponseEntity<>(response, response.status());
     }
 
     @PutMapping("/subscription/update/{subscriptionId}")
+    @Operation(summary = "Update an existing subscription")
     public ResponseEntity<Response> updateSubscription(
             Principal principal,
             @PathVariable UUID subscriptionId,
@@ -65,7 +72,18 @@ public class ProductController {
         return new ResponseEntity<>(response, response.status());
     }
 
+    @PostMapping("/delivery/create")
+    @Operation(summary = "Place a one time order")
+    public ResponseEntity<Response> createNewDelivery(
+            Principal principal,
+            @RequestBody DeliveryRequestDto request
+    ) {
+        Response response = deliveryService.createNewDelivery(principal.getName(), request);
+        return new ResponseEntity<>(response, response.status());
+    }
+
     @GetMapping("/deliveries")
+    @Operation(summary = "Get all deliveries")
     public ResponseEntity<Response> getDeliveries(
             Principal principal,
             @RequestParam(defaultValue = "0") int pageNumber,

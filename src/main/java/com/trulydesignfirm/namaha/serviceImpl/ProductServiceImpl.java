@@ -169,8 +169,8 @@ public class ProductServiceImpl implements ProductService {
                 .findByMobile(mobile)
                 .orElseThrow(() -> new UserException("User not found!"));
         Product product = productRepo
-                .findByIdAndActiveTrue(request.productId())
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found!"));
+                .findActiveSubscriptionProductById(request.productId())
+                .orElseThrow(() -> new ResourceNotFoundException("No eligible product found!"));
         Address address = addressRepo
                 .findByIdAndUser_MobileAndActiveTrue(request.addressId(), mobile)
                 .orElseThrow(() -> new ResourceNotFoundException("No such address not found!"));

@@ -38,6 +38,10 @@ public class Delivery {
     @JoinColumn(name = "address_id", updatable = false, nullable = false)
     private Address address;
 
+    @ManyToOne
+    @JoinColumn(name = "product_id", updatable = false, nullable = false)
+    private Product product;
+
     @CreationTimestamp
     private Instant createdAt;
 
@@ -47,18 +51,11 @@ public class Delivery {
     @Column(nullable = false)
     private boolean active = true;
 
-    public boolean isDelivered() {
-        return this.status == DeliveryStatus.DELIVERED;
-    }
-
-    public boolean isPending() {
-        return this.status == DeliveryStatus.PENDING;
-    }
-
     public Delivery(Subscription subscription) {
         this.user = subscription.getUser();
         this.status = DeliveryStatus.PENDING;
         this.address = subscription.getAddress();
+        this.product = subscription.getProduct();
         this.scheduledAt = LocalDate.now()
                 .atTime(subscription.getDeliverySlot().getEnd())
                 .atZone(ZoneId.systemDefault())

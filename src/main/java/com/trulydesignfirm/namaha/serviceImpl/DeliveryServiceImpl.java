@@ -3,10 +3,18 @@ package com.trulydesignfirm.namaha.serviceImpl;
 import com.trulydesignfirm.namaha.constant.DeliveryStatus;
 import com.trulydesignfirm.namaha.dto.DeliveryDto;
 import com.trulydesignfirm.namaha.dto.DeliveryInfoDto;
+import com.trulydesignfirm.namaha.dto.DeliveryRequestDto;
 import com.trulydesignfirm.namaha.dto.Response;
 import com.trulydesignfirm.namaha.exception.ResourceNotFoundException;
+import com.trulydesignfirm.namaha.exception.UserException;
+import com.trulydesignfirm.namaha.model.Address;
 import com.trulydesignfirm.namaha.model.Delivery;
+import com.trulydesignfirm.namaha.model.LoginUser;
+import com.trulydesignfirm.namaha.model.Product;
+import com.trulydesignfirm.namaha.repository.AddressRepo;
 import com.trulydesignfirm.namaha.repository.DeliveryRepo;
+import com.trulydesignfirm.namaha.repository.LoginUserRepo;
+import com.trulydesignfirm.namaha.repository.ProductRepo;
 import com.trulydesignfirm.namaha.service.DeliveryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,6 +24,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.ZoneId;
 import java.util.UUID;
 
 @Service
@@ -23,6 +32,9 @@ import java.util.UUID;
 public class DeliveryServiceImpl implements DeliveryService {
 
     private final DeliveryRepo deliveryRepo;
+    private final LoginUserRepo loginUserRepo;
+    private final AddressRepo addressRepo;
+    private final ProductRepo productRepo;
 
     @Override
     public Response getAllPendingDeliveries(int pageNumber, int pageSize) {
@@ -40,6 +52,30 @@ public class DeliveryServiceImpl implements DeliveryService {
         delivery.setStatus(status);
         deliveryRepo.save(delivery);
         return new Response("Delivery status updated successfully", HttpStatus.OK, null);
+    }
+
+    @Override
+    public Response createNewDelivery(String mobile, DeliveryRequestDto request) {
+        LoginUser user = loginUserRepo
+                .findByMobile(mobile)
+                .orElseThrow(() -> new UserException("User not found!"));
+        Address address = addressRepo
+                .findByIdAndUser_MobileAndActiveTrue(request.addressId(), mobile)
+                .orElseThrow(() -> new ResourceNotFoundException("No such Address Found!"));
+        Product product = productRepo
+                .findActiveOneTimeOnlyProductById(request.productId())
+                .orElseThrow(() -> new ResourceNotFoundException("No product available"));
+        Delivery delivery = new Delivery();
+        delivery.setStatus(DeliveryStatus.PENDING);
+        delivery.setScheduledAt(request.deliveryDate()
+                .atTime(request.slot().getEnd())
+                .atZone(ZoneId.systemDefault())
+                .toInstant());
+        delivery.setUser(user);
+        delivery.setAddress(address);
+        delivery.setProduct(product);
+        deliveryRepo.save(delivery);
+        return new Response("Order Placed successfully", HttpStatus.CREATED, null);
     }
 
     @Override
