@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Entity
@@ -45,6 +46,12 @@ public class Subscription {
     @Enumerated(EnumType.STRING)
     private DeliverySlot deliverySlot;
 
+    @Column(nullable = false)
+    private Instant startAt;
+
+    @Column(nullable = false)
+    private Instant endAt;
+
     @CreationTimestamp
     private Instant createdAt;
 
@@ -52,15 +59,20 @@ public class Subscription {
     private Instant updatedAt;
 
     public boolean isActive() {
-        return this.status == SubscriptionStatus.ACTIVE;
+        Instant now = Instant.now();
+        return this.status == SubscriptionStatus.ACTIVE
+                && now.isBefore(this.endAt);
     }
 
     public boolean isExpired() {
-        return this.status == SubscriptionStatus.EXPIRED;
+        Instant now = Instant.now();
+        return now.isAfter(this.endAt) || this.status == SubscriptionStatus.EXPIRED;
     }
 
     public boolean isUpdatable() {
-        return this.status == SubscriptionStatus.ACTIVE || this.status == SubscriptionStatus.PAUSED;
+        Instant now = Instant.now();
+        return (this.status == SubscriptionStatus.ACTIVE || this.status == SubscriptionStatus.PAUSED)
+                && now.isBefore(this.endAt);
     }
 
     public Subscription(LoginUser user, Product product, SubscriptionStatus status, DeliverySlot deliverySlot, Address address) {
@@ -69,5 +81,8 @@ public class Subscription {
         this.status = status;
         this.deliverySlot = deliverySlot;
         this.address = address;
+        Instant now = Instant.now();
+        this.startAt = now;
+        this.endAt = now.plus(product.getDurationInDays(), ChronoUnit.DAYS);
     }
 }
