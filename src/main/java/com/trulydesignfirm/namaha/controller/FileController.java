@@ -26,8 +26,8 @@ public class FileController {
 
     @DeleteMapping("/delete-image")
     @Operation(summary = "Delete an image file")
-    public ResponseEntity<Response> deleteImage(@RequestParam("fileName") String fileName) {
-        Response response = fileService.deleteFile(fileName);
+    public ResponseEntity<Response> deleteImage(@RequestParam("publicId") String publicId) {
+        Response response = fileService.deleteFile(publicId);
         return new ResponseEntity<>(response, response.status());
     }
 

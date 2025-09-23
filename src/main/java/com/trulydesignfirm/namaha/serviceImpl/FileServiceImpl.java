@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.lang.module.ResolutionException;
 import java.util.Map;
 
 @Service
@@ -46,14 +45,14 @@ public class FileServiceImpl implements FileService {
 
     @Override
     @Transactional
-    public Response deleteFile(String fileName) {
+    public Response deleteFile(String publicId) {
         try {
             ImageFile file = fileRepo
-                    .findByFileName(fileName)
-                    .orElseThrow(() -> new ResolutionException("File not found."));
+                    .findByPublicId(publicId)
+                    .orElseThrow(() -> new FileHandlingException("File not found!"));
             cloudinary.uploader().destroy(file.getPublicId(), ObjectUtils.emptyMap());
             fileRepo.delete(file);
-            return new Response("File %s deleted successfully!".formatted(fileName), HttpStatus.OK, null);
+            return new Response("File %s deleted successfully!".formatted(file.getFileName()), HttpStatus.OK, null);
         } catch (IOException e) {
             throw new FileHandlingException(e.getMessage());
         }

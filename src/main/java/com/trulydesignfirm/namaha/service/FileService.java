@@ -6,5 +6,5 @@ import org.springframework.web.multipart.MultipartFile;
 public interface FileService {
     Response saveFile(MultipartFile file);
 
-    Response deleteFile(String fileName);
+    Response deleteFile(String publicId);
 }

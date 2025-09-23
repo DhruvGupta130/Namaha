@@ -2,6 +2,7 @@ package com.trulydesignfirm.namaha.repository;
 
 import com.trulydesignfirm.namaha.model.Product;
 import com.trulydesignfirm.namaha.model.ProductCategory;
+import com.trulydesignfirm.namaha.model.ProductVariety;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -39,4 +40,8 @@ public interface ProductRepo extends JpaRepository<Product, Long> {
              AND (p.durationInDays IS NULL OR p.durationInDays = 0)
            """)
     Optional<Product> findActiveOneTimeOnlyProductById(@Param("id") Long id);
+
+    boolean existsByVariety(ProductVariety variety);
+
+    boolean existsByCategory(ProductCategory category);
 }

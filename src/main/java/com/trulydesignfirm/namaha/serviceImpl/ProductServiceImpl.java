@@ -11,8 +11,6 @@ import com.trulydesignfirm.namaha.model.*;
 import com.trulydesignfirm.namaha.repository.*;
 import com.trulydesignfirm.namaha.service.ProductService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -56,14 +54,16 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public Response deleteVariety(String varietyName) {
-        try {
-            productVarietyRepo.deleteById(varietyName.toUpperCase());
-            return new Response("Product Variety deleted successfully!", HttpStatus.OK, null);
-        } catch (EmptyResultDataAccessException e) {
-            return new Response("Product Variety not found!", HttpStatus.NOT_FOUND, null);
-        } catch (DataIntegrityViolationException e) {
+        if (productRepo.existsByVariety(new ProductVariety(varietyName))) {
             return new Response("Product Variety is in use!", HttpStatus.BAD_REQUEST, null);
         }
+
+        if (!productVarietyRepo.existsById(varietyName.toUpperCase())) {
+            return new Response("Product Variety not found!", HttpStatus.NOT_FOUND, null);
+        }
+
+        productVarietyRepo.deleteById(varietyName.toUpperCase());
+        return new Response("Product Variety deleted successfully!", HttpStatus.OK, null);
     }
 
     @Override
@@ -86,14 +86,18 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public Response deleteCategory(String categoryName) {
-        try {
-            productCategoryRepo.deleteById(categoryName.toUpperCase());
-            return new Response("Product Category deleted successfully!", HttpStatus.OK, null);
-        } catch (EmptyResultDataAccessException e) {
-            return new Response("Product Category not found!", HttpStatus.NOT_FOUND, null);
-        } catch (DataIntegrityViolationException e) {
+        if (productRepo.existsByCategory(new ProductCategory(categoryName))) {
             return new Response("Product Category is in use!", HttpStatus.BAD_REQUEST, null);
         }
+
+        // Check if a category exists
+        if (!productCategoryRepo.existsById(categoryName.toUpperCase())) {
+            return new Response("Product Category not found!", HttpStatus.NOT_FOUND, null);
+        }
+
+        // Safe to delete
+        productCategoryRepo.deleteById(categoryName.toUpperCase());
+        return new Response("Product Category deleted successfully!", HttpStatus.OK, null);
     }
 
     @Override
@@ -119,7 +123,7 @@ public class ProductServiceImpl implements ProductService {
                 .map(product -> {
                     product.setActive(false);
                     productRepo.save(product);
-                    return new Response("Product marked as inactive!", HttpStatus.OK, null);
+                    return new Response("Product deleted Successfully!", HttpStatus.OK, null);
                 })
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found!"));
     }
