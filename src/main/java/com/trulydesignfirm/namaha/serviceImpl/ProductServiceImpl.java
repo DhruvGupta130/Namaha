@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -152,10 +153,18 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Response getAllSubscriptions(String mobile, int pageNumber, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<SubscriptionDto> page = subscriptionRepo.findAllByUser_Mobile(mobile, pageable)
                 .map(SubscriptionDto::new);
         return new Response("Subscriptions fetched successfully!", HttpStatus.OK, page);
+    }
+
+    @Override
+    public Response getAllSubscriptions(int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<UserSubscriptionDto> page = subscriptionRepo.findAll(pageable)
+                .map(UserSubscriptionDto::new);
+        return new Response("All Subscriptions fetched successfully!", HttpStatus.OK, page);
     }
 
     @Override

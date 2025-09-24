@@ -117,4 +117,14 @@ public class AdminController {
         Response response = serviceAreaService.deleteServiceArea(id);
         return new ResponseEntity<>(response, response.status());
     }
+
+    @GetMapping("/subscriptions")
+    @Operation(summary = "Get all subscriptions")
+    public ResponseEntity<Response> getSubscriptions(
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize
+    ) {
+        Response response = productService.getAllSubscriptions(pageNumber, pageSize);
+        return new ResponseEntity<>(response, response.status());
+    }
 }

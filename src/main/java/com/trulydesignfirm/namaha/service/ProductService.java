@@ -36,6 +36,8 @@ public interface ProductService {
 
     Response getAllSubscriptions(String mobile, int pageNumber, int pageSize);
 
+    Response getAllSubscriptions(int pageNumber, int pageSize);
+
     Response getAllDeliverySlots();
 
     Response createSubscription(String mobile, SubscriptionRequestDto request);
