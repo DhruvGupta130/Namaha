@@ -26,7 +26,6 @@ public interface ProductRepo extends JpaRepository<Product, Long> {
              AND p.active = true
              AND p.durationInDays IS NOT NULL
              AND p.durationInDays > 0
-             AND (p.oneTimePrice IS NULL OR p.oneTimePrice = 0)
            """)
     Optional<Product> findActiveSubscriptionProductById(@Param("id") Long id);
 
@@ -37,7 +36,6 @@ public interface ProductRepo extends JpaRepository<Product, Long> {
              AND p.active = true
              AND p.oneTimePrice IS NOT NULL
              AND p.oneTimePrice > 0
-             AND (p.durationInDays IS NULL OR p.durationInDays = 0)
            """)
     Optional<Product> findActiveOneTimeOnlyProductById(@Param("id") Long id);
 

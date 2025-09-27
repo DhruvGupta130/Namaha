@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -37,5 +38,13 @@ public interface SubscriptionRepo extends JpaRepository<Subscription, UUID> {
          AND s.endAt <= CURRENT_TIMESTAMP
        """)
     List<Subscription> findAllUnUpdatedExpiredSubscriptions();
+
+    @Query("SELECT SUM(s.product.subscriptionPrice) FROM Subscription s where s.user.id = :userId")
+    Long sumSubscriptionPriceByUser(UUID userId);
+
+    long countByStatus(SubscriptionStatus status);
+
+    @Query("SELECT SUM(s.product.subscriptionPrice) FROM Subscription s")
+    BigDecimal subscriptionRevenue();
 
 }

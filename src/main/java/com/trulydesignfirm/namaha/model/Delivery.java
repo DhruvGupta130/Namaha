@@ -1,5 +1,6 @@
 package com.trulydesignfirm.namaha.model;
 
+import com.trulydesignfirm.namaha.constant.DeliverySlot;
 import com.trulydesignfirm.namaha.constant.DeliveryStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -8,9 +9,8 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.UUID;
 
 @Entity
@@ -28,7 +28,8 @@ public class Delivery {
     private DeliveryStatus status;
 
     @Column(nullable = false)
-    private Instant scheduledAt;
+    @Enumerated(EnumType.STRING)
+    private DeliverySlot slot;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false, updatable = false)
@@ -42,6 +43,9 @@ public class Delivery {
     @JoinColumn(name = "product_id", updatable = false, nullable = false)
     private Product product;
 
+    @Column(precision = 10, scale = 2, nullable = false)
+    private BigDecimal finalPrice;
+
     @CreationTimestamp
     private Instant createdAt;
 
@@ -51,14 +55,12 @@ public class Delivery {
     @Column(nullable = false)
     private boolean active = true;
 
-    public Delivery(Subscription subscription) {
+    public Delivery(Subscription subscription, BigDecimal finalPrice) {
         this.user = subscription.getUser();
         this.status = DeliveryStatus.PENDING;
         this.address = subscription.getAddress();
         this.product = subscription.getProduct();
-        this.scheduledAt = LocalDate.now()
-                .atTime(subscription.getDeliverySlot().getEnd())
-                .atZone(ZoneId.systemDefault())
-                .toInstant();
+        this.slot = subscription.getDeliverySlot();
+        this.finalPrice = finalPrice;
     }
 }

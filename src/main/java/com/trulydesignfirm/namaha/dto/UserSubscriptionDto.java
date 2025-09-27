@@ -3,7 +3,9 @@ package com.trulydesignfirm.namaha.dto;
 import com.trulydesignfirm.namaha.constant.SubscriptionStatus;
 import com.trulydesignfirm.namaha.model.Subscription;
 
+import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 public record UserSubscriptionDto(
@@ -13,9 +15,11 @@ public record UserSubscriptionDto(
         Long productId,
         String productTitle,
         String productImage,
+        BigDecimal productPrice,
         SubscriptionStatus status,
         AddressDto address,
         DeliverySlotDto slot,
+        OfferDto offer,
         Instant startAt,
         Instant endAt
 ) {
@@ -27,9 +31,11 @@ public record UserSubscriptionDto(
                 subscription.getProduct().getId(),
                 subscription.getProduct().getTitle(),
                 subscription.getProduct().getImages().getFirst(),
+                subscription.getProduct().getSubscriptionPrice(),
                 subscription.getStatus(),
                 new AddressDto(subscription.getAddress()),
                 new DeliverySlotDto(subscription.getDeliverySlot()),
+                Optional.ofNullable(subscription.getOffer()).map(OfferDto::new).orElse(null),
                 subscription.getStartAt(),
                 subscription.getEndAt()
         );

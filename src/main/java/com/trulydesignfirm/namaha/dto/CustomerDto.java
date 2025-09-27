@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Email;
 
 import java.util.UUID;
 
-public record UserDto(
+public record CustomerDto(
         UUID id,
 
         @Email
@@ -18,16 +18,22 @@ public record UserDto(
 
         Role role,
         String name,
-        boolean active
+        boolean active,
+        long orders,
+        long subscriptionRevenue,
+        long totalRevenue
 ) {
-    public UserDto(LoginUser user) {
+    public CustomerDto(LoginUser user, long orders, long subscriptionRevenue, long totalRevenue) {
         this(
                 user.getId(),
                 user.getEmail(),
                 user.getMobile(),
                 user.getRole(),
                 user.getName(),
-                user.isActive()
+                user.isActive(),
+                orders,
+                subscriptionRevenue,
+                totalRevenue
         );
     }
 }

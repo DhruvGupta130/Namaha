@@ -5,12 +5,14 @@ import com.trulydesignfirm.namaha.model.Delivery;
 import com.trulydesignfirm.namaha.model.Subscription;
 import com.trulydesignfirm.namaha.repository.DeliveryRepo;
 import com.trulydesignfirm.namaha.repository.SubscriptionRepo;
+import com.trulydesignfirm.namaha.service.OfferService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -21,6 +23,7 @@ public class DeliveryScheduler {
 
     private final SubscriptionRepo subscriptionRepo;
     private final DeliveryRepo deliveryRepo;
+    private final OfferService offerService;
 
     @Transactional
     @Scheduled(cron = "0 0 2 * * ?")
@@ -36,7 +39,11 @@ public class DeliveryScheduler {
         List<Delivery> list = subscriptionRepo
                 .findAllActiveSubscriptions(SubscriptionStatus.ACTIVE)
                 .stream()
-                .map(Delivery::new)
+                .map(subscription -> {
+                    BigDecimal discount = offerService.applyOffer(subscription.getOffer(), subscription.getProduct().getSubscriptionPrice());
+                    BigDecimal finalPrice = subscription.getProduct().getSubscriptionPrice().subtract(discount);
+                    return new Delivery(subscription, finalPrice);
+                })
                 .toList();
         log.info("Creating {} deliveries from subscriptions on {}", list.size(), LocalDate.now());
         deliveryRepo.saveAll(list);

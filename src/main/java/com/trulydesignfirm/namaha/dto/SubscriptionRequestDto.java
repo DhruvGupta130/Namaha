@@ -11,6 +11,8 @@ public record SubscriptionRequestDto(
         @NotNull(message = "Delivery Slot is required!")
         DeliverySlot slot,
 
+        String couponCode,
+
         @NotNull(message = "Address is required!")
         Long addressId
 ) {}

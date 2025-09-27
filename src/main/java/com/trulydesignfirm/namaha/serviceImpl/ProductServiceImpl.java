@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -34,6 +35,7 @@ public class ProductServiceImpl implements ProductService {
     private final LoginUserRepo loginUserRepo;
     private final SubscriptionRepo subscriptionRepo;
     private final AddressRepo addressRepo;
+    private final OffersRepo offersRepo;
 
     @Override
     public Response getProductVarieties() {
@@ -187,12 +189,19 @@ public class ProductServiceImpl implements ProductService {
         Address address = addressRepo
                 .findByIdAndUser_MobileAndActiveTrue(request.addressId(), mobile)
                 .orElseThrow(() -> new ResourceNotFoundException("No such address not found!"));
+        Offers offer = Optional
+                .ofNullable(request.couponCode())
+                .map(String::toUpperCase)
+                .map(code -> offersRepo
+                        .findByCouponCodeAndActiveTrue(code)
+                        .orElseThrow(() -> new ResourceNotFoundException("Coupon code Invalid!")))
+                .orElse(null);
         boolean alreadySubscribed = subscriptionRepo
                 .existsByUserAndProductAndStatusAndAddress(user, product, SubscriptionStatus.ACTIVE, address);
         if (alreadySubscribed) {
             return new Response("You already have an active subscription for this product.", HttpStatus.BAD_REQUEST, null);
         }
-        Subscription subscription = new Subscription(user, product, SubscriptionStatus.ACTIVE, request.slot(), address);
+        Subscription subscription = new Subscription(user, product, SubscriptionStatus.ACTIVE, request.slot(), offer, address);
         subscriptionRepo.save(subscription);
         return new Response("Subscription created successfully!", HttpStatus.CREATED, null);
     }

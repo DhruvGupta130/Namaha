@@ -1,16 +1,18 @@
 package com.trulydesignfirm.namaha.controller;
 
-import com.trulydesignfirm.namaha.dto.ProductDto;
-import com.trulydesignfirm.namaha.dto.Response;
-import com.trulydesignfirm.namaha.dto.ServiceAreaDto;
-import com.trulydesignfirm.namaha.service.ProductService;
-import com.trulydesignfirm.namaha.service.ServiceAreaService;
+import com.trulydesignfirm.namaha.constant.DeliverySlot;
+import com.trulydesignfirm.namaha.constant.DeliveryStatus;
+import com.trulydesignfirm.namaha.dto.*;
+import com.trulydesignfirm.namaha.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -20,6 +22,41 @@ public class AdminController {
 
     private final ProductService productService;
     private final ServiceAreaService serviceAreaService;
+    private final AuthService authService;
+    private final DeliveryService deliveryService;
+    private final OfferService offerService;
+
+    @GetMapping("/user/get")
+    public ResponseEntity<Response> getUsers(
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize,
+            Principal principal
+    ) {
+        Response response = authService.getSpecialUsers(principal.getName(), pageNumber, pageSize);
+        return new ResponseEntity<>(response, response.status());
+    }
+
+    @PostMapping("/user/create")
+    public ResponseEntity<Response> createUser(@Valid @RequestBody UserDto userDto) {
+        Response response = authService.createUser(userDto);
+        return new ResponseEntity<>(response, response.status());
+    }
+
+    @PatchMapping("/user/update/{userId}")
+    public ResponseEntity<Response> updateUser(@PathVariable UUID userId) {
+        Response response = authService.updateUserActiveStatus(userId);
+        return new ResponseEntity<>(response, response.status());
+    }
+
+    @GetMapping("/user/customer")
+    public ResponseEntity<Response> getCustomers(
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(required = false) String keyword
+    ) {
+        Response response = authService.getAllCustomers(pageNumber, pageSize, keyword);
+        return new ResponseEntity<>(response, response.status());
+    }
 
     @PostMapping("/product/variety")
     @Operation(summary = "Create a new product variety")
@@ -127,4 +164,51 @@ public class AdminController {
         Response response = productService.getAllSubscriptions(pageNumber, pageSize);
         return new ResponseEntity<>(response, response.status());
     }
+
+    @GetMapping("/deliveries")
+    public ResponseEntity<Response> getAllDeliveries(
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(required = false) DeliverySlot slot,
+            @RequestParam(required = false) DeliveryStatus status,
+            @RequestParam(required = false) String keyword
+    ) {
+        Response response = deliveryService.getAllDeliveries(pageNumber, pageSize, slot, status, keyword);
+        return new ResponseEntity<>(response, response.status());
+    }
+
+    @PatchMapping("/delivery/status/{id}")
+    public ResponseEntity<Response> updateDeliveryStatus(@PathVariable UUID id, @RequestParam DeliveryStatus status) {
+        Response response = deliveryService.updateDeliveryStatus(id, status);
+        return new ResponseEntity<>(response, response.status());
+    }
+
+    @GetMapping("/offer/get")
+    public ResponseEntity<Response> getAllOffers(
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(required = false ) String keyword
+    ) {
+        Response response = offerService.getAllOffers(pageNumber, pageSize, keyword);
+        return new ResponseEntity<>(response, response.status());
+    }
+
+    @PostMapping("/offer/create")
+    public ResponseEntity<Response> createOffer(@RequestBody @Valid OfferCreateDto request) {
+        Response response = offerService.createNewOffer(request);
+        return new ResponseEntity<>(response, response.status());
+    }
+
+    @PatchMapping("/offer/status/{offerId}")
+    public ResponseEntity<Response> updateOfferStatus(@PathVariable UUID offerId) {
+        Response response = offerService.updateOfferStatus(offerId);
+        return new ResponseEntity<>(response, response.status());
+    }
+
+    @GetMapping("/dashboard/stats")
+    public ResponseEntity<Response> getDashboardStats() {
+        Response response = authService.getDashboardStats();
+        return new ResponseEntity<>(response, response.status());
+    }
+
 }

@@ -72,6 +72,12 @@ public class GlobalExceptionHandler {
         return getErrorResponse(HttpStatus.BAD_REQUEST, "Service Area Error", ex.getMessage());
     }
 
+    @ExceptionHandler(OfferException.class)
+    public ResponseEntity<ErrorResponse> handleOfferException(OfferException ex) {
+        log.error("Offer Exception", ex);
+        return getErrorResponse(HttpStatus.BAD_REQUEST, "Offer Error", ex.getMessage());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
         log.warn("Validation failed", ex);

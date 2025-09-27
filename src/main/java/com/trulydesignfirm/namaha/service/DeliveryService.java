@@ -1,5 +1,6 @@
 package com.trulydesignfirm.namaha.service;
 
+import com.trulydesignfirm.namaha.constant.DeliverySlot;
 import com.trulydesignfirm.namaha.constant.DeliveryStatus;
 import com.trulydesignfirm.namaha.dto.DeliveryRequestDto;
 import com.trulydesignfirm.namaha.dto.Response;
@@ -14,4 +15,6 @@ public interface DeliveryService {
     Response updateDeliveryStatus(UUID deliveryId, DeliveryStatus status);
 
     Response createNewDelivery(String mobile, DeliveryRequestDto request);
+
+    Response getAllDeliveries(int pageNumber, int pageSize, DeliverySlot slot, DeliveryStatus status, String keyword);
 }

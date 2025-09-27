@@ -38,6 +38,9 @@ public class Subscription {
     @Enumerated(EnumType.STRING)
     private SubscriptionStatus status;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Offers offer;
+
     @ManyToOne
     @JoinColumn(name = "address_id")
     private Address address;
@@ -75,11 +78,12 @@ public class Subscription {
                 && now.isBefore(this.endAt);
     }
 
-    public Subscription(LoginUser user, Product product, SubscriptionStatus status, DeliverySlot deliverySlot, Address address) {
+    public Subscription(LoginUser user, Product product, SubscriptionStatus status, DeliverySlot deliverySlot, Offers offer, Address address) {
         this.user = user;
         this.product = product;
         this.status = status;
         this.deliverySlot = deliverySlot;
+        this.offer = offer;
         this.address = address;
         Instant now = Instant.now();
         this.startAt = now;

@@ -16,6 +16,8 @@ public record DeliveryRequestDto(
         DeliverySlot slot,
 
         @NotNull(message = "Address is required!")
-        Long addressId
+        Long addressId,
+
+        String couponCode
 ) {
 }

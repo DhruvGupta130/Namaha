@@ -1,8 +1,10 @@
 package com.trulydesignfirm.namaha.controller;
 
+import com.trulydesignfirm.namaha.constant.OfferType;
 import com.trulydesignfirm.namaha.dto.AddressDto;
 import com.trulydesignfirm.namaha.dto.Response;
 import com.trulydesignfirm.namaha.dto.UpdateUser;
+import com.trulydesignfirm.namaha.service.OfferService;
 import com.trulydesignfirm.namaha.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,6 +22,7 @@ import java.security.Principal;
 public class UserController {
 
     private final UserService userService;
+    private final OfferService offerService;
 
     @GetMapping("/info")
     @Operation(summary = "Retrieve user details")
@@ -74,6 +77,17 @@ public class UserController {
     @Operation(summary = "Check service status for a given address")
     public ResponseEntity<Response> checkServiceStatus(Principal principal, @PathVariable Long addressId) {
         Response response = userService.checkServiceArea(principal.getName(), addressId);
+        return new ResponseEntity<>(response, response.status());
+    }
+
+    @GetMapping("/offers/get/{productId}")
+    public ResponseEntity<Response> getOffers(
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @PathVariable long productId,
+            @RequestParam OfferType type
+    ) {
+        Response response = offerService.getAllEligibleOffers(pageNumber, pageSize, productId, type);
         return new ResponseEntity<>(response, response.status());
     }
 }

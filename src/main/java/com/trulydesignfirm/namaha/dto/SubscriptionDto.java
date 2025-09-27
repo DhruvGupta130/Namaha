@@ -4,6 +4,7 @@ import com.trulydesignfirm.namaha.constant.SubscriptionStatus;
 import com.trulydesignfirm.namaha.model.Subscription;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 public record SubscriptionDto(
@@ -13,6 +14,7 @@ public record SubscriptionDto(
         SubscriptionStatus status,
         AddressDto address,
         DeliverySlotDto slot,
+        OfferDto offer,
         Instant startAt,
         Instant endAt
 ) {
@@ -24,6 +26,7 @@ public record SubscriptionDto(
                 subscription.getStatus(),
                 new AddressDto(subscription.getAddress()),
                 new DeliverySlotDto(subscription.getDeliverySlot()),
+                Optional.ofNullable(subscription.getOffer()).map(OfferDto::new).orElse(null),
                 subscription.getStartAt(),
                 subscription.getEndAt()
         );
