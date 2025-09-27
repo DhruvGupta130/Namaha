@@ -81,6 +81,7 @@ public class UserController {
     }
 
     @GetMapping("/offers/get/{productId}")
+    @Operation(summary = "Get all eligible offers based on the product")
     public ResponseEntity<Response> getOffers(
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "10") int pageSize,
